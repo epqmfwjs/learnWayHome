@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/member/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div th:replace="admin/admin-sidebar :: sidebar"></div>
+        </div>
+        <div class="col-md-1"></div><!-- 빈공간 그리드-->
+        <div class="col-md-8 mt-5">
+            <h2>기준 정보 수정</h2>
+            <hr>
+            <form th:action="@{/admin/updateMasterData}" method="post" th:object="${masterDataDTO}">
+                <div class="form-group mt-5">
+                    <label for="category">기준 정보 선택:</label>
+                    <input type="text" id="category" name="category" class="form-control" th:field="*{category}" readonly>
+                    <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="code">코드:</label>
+                    <input type="text" id="code" name="code" class="form-control" th:field="*{code}" readonly>
+                    <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="name">이름:</label>
+                    <input type="text" id="name" name="name" class="form-control" th:field="*{name}">
+                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="note">비고:</label>
+                    <input type="text" id="note" name="note" class="form-control" th:field="*{note}">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-outline-primary">수정</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1"></div><!-- 빈공간 그리드-->
+    </div>
+</div>
+</body>
+</html>

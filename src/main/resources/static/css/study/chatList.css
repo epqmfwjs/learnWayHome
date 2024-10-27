@@ -1,0 +1,90 @@
+@import url("../globalstyle.css");
+@import url("../consult/sidebarConsultantList.css");
+@import url("../consult/sidebarReservationList.css");
+
+
+.content-wrapper {
+    max-width: 1300px;
+    height: 85vh;
+    margin-top: 7vh;
+}
+
+h1 {
+    font-size: 28px; /* 제목 크기 증가 */
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.chat-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* 카드 사이의 간격 증가 */
+    justify-content: flex-start;
+}
+
+.chat-card {
+    width: calc(33.333% - 20px); /* 3개씩 배치, 간격 고려 */
+    min-height: 250px; /* 최소 높이 설정 */
+    min-width : 350px;
+    margin: 0;
+    background-color: white;
+    border-radius: 12px; /* 모서리 둥글기 증가 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.chat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.chat-info {
+    padding: 25px; /* 내부 패딩 증가 */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-icon {
+    font-size: 36px; /* 아이콘 크기 증가 */
+    margin-bottom: 20px;
+    color: #17a2b8;
+}
+
+.chat-name {
+    font-weight: bold;
+    font-size: 1.4em; /* 폰트 크기 증가 */
+    margin-bottom: 10px;
+}
+
+.chat-host {
+    font-size: 1.1em; /* 폰트 크기 증가 */
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.btn-enter {
+    background-color: transparent;
+    color: #17a2b8;
+    border: 2px solid #17a2b8; /* 테두리 두께 증가 */
+    padding: 10px 20px; /* 버튼 크기 증가 */
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.1em; /* 폰트 크기 증가 */
+    align-self: flex-start;
+}
+
+.btn-enter:hover {
+    background-color: #17a2b8;
+    color: white;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+}

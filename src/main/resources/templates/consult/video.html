@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>LearnWay</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #videoContainer {
+            position: relative;
+            width: 85%;
+            height: 80%;
+            background-color: #000;
+            border: 5px solid rgb(120, 121, 131); /* 테두리 추가 */
+            border-radius: 10px; /* 테두리 둥글게 */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+        }
+        #localStream {
+            position: absolute;
+            width: 20%;
+            height: 20%;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2;
+            border: 2px solid #fff;
+            border-radius: 10px; /* 테두리 둥글게 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        #remoteStreamDiv {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #remoteStreamDiv video {
+            max-width: 100%;
+            max-height: 100%;
+            border: 3px solid #fff; /* 테두리 추가 */
+            border-radius: 10px; /* 테두리 둥글게 */
+        }
+        #controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .notification {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="videoContainer">
+	<input type="hidden" th:value="${connectId}" id="connectId">
+    <video id="localStream" autoplay playsinline controls style="display: none;"></video>
+    <div id="remoteStreamDiv"></div>
+</div>
+<div id="notificationArea"></div>
+<div id="controls">
+    <button class="btn btn-outline-success" id="startStreamBtn">상담시작</button>&nbsp;&nbsp;
+    <button class="btn btn-outline-danger" id="toggleCameraBtn">카메라On</button>&nbsp;&nbsp;
+    <button class="btn btn-outline-danger" id="toggleMicBtn">마이크On</button>&nbsp;&nbsp;
+    <button class="btn btn-outline-secondary" id="leaveStreamBtn">나가기</button>
+</div>
+<script>
+    let localStreamElement = document.querySelector('#localStream');
+    //const myKey = Math.random().toString(36).substring(2, 11);
+    const myKey = document.getElementById("connectId").value;
+    console.log(myKey);
+    let pcListMap = new Map();
+    let roomId;
+    let otherKeyList = [];
+    let localStream = undefined;
+    let stompClient;
+    let videoEnabled = true;
+    let audioEnabled = true;
+
+    const startCam = async () => {
+        if (navigator.mediaDevices !== undefined) {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: audioEnabled, video: videoEnabled });
+                if (audioEnabled) {
+                    localStream.getAudioTracks()[0].enabled = true;
+                }
+                localStreamElement.srcObject = localStream;
+                localStreamElement.style.display = 'block'; // 화면에 카메라 활성화를 보이도록 설정
+            } catch (error) {
+                console.error("Error accessing media devices:", error);
+            }
+        }
+    };
+
+    const connectSocket = async () => {
+        
+        //const socket = new SockJS('/signaling/video');
+        //const socket = new SockJS('https://192.168.219.105:443/signaling/video');
+        const socket = new SockJS('https://43.202.58.56:443/signaling/video');//aws 테스트
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+
+        stompClient.connect({}, function () {
+            console.log('WebRTC 연결 성공');
+
+            stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomId}`, candidate => {
+                const key = JSON.parse(candidate.body).key;
+                const message = JSON.parse(candidate.body).body;
+                console.log('Received ICE candidate from:', key, message);
+                if (pcListMap.has(key)) {
+                    pcListMap.get(key).addIceCandidate(new RTCIceCandidate(message));
+                }
+            });
+
+            stompClient.subscribe(`/topic/peer/offer/${myKey}/${roomId}`, offer => {
+                const key = JSON.parse(offer.body).key;
+                const message = JSON.parse(offer.body).body;
+                console.log('Received offer from:', key, message);
+                if (!pcListMap.has(key)) {
+                    pcListMap.set(key, createPeerConnection(key));
+                }
+                const pc = pcListMap.get(key);
+                pc.setRemoteDescription(new RTCSessionDescription(message));
+                sendAnswer(pc, key);
+            });
+
+            stompClient.subscribe(`/topic/peer/answer/${myKey}/${roomId}`, answer => {
+                const key = JSON.parse(answer.body).key;
+                const message = JSON.parse(answer.body).body;
+                console.log('Received answer from:', key, message);
+                if (pcListMap.has(key)) {
+                    pcListMap.get(key).setRemoteDescription(new RTCSessionDescription(message));
+                }
+            });
+
+            stompClient.subscribe(`/topic/call/key`, () => {
+                console.log('Requesting keys...');
+                stompClient.send(`/app/send/key`, {}, JSON.stringify(myKey));
+            });
+
+            stompClient.subscribe(`/topic/send/key`, message => {
+                const key = JSON.parse(message.body);
+                console.log('Received key:', key);
+                if (myKey !== key && !otherKeyList.includes(key)) {
+                    otherKeyList.push(key);
+                    console.log('Added key to otherKeyList:', key);
+                    showNotification(`상대방이 입장했습니다: ${key}`);
+                }
+            });
+
+            document.querySelector('#startStreamBtn').addEventListener('click', async () => {
+                const startStreamBtn = document.querySelector('#startStreamBtn');
+                stompClient.send(`/app/call/key`, {}, {});
+                setTimeout(() => {
+                    otherKeyList.forEach((key) => {
+                        if (!pcListMap.has(key)) {
+                            pcListMap.set(key, createPeerConnection(key));
+                            sendOffer(pcListMap.get(key), key);
+                        }
+                    });
+                    startStreamBtn.textContent = '상담중';
+                    startStreamBtn.classList.add('active');
+                    startStreamBtn.disabled = true;
+                }, 1000);
+            });
+
+            document.querySelector('#leaveStreamBtn').addEventListener('click', () => {
+                leaveStream();
+            });
+        });
+    };
+
+    const leaveStream = () => {
+        pcListMap.forEach((pc, key) => {
+            pc.close();
+        });
+        pcListMap.clear();
+
+        // 서버로 방 나가기 요청 보내기
+        if (stompClient && roomId && myKey) {
+            stompClient.send(`/app/leave/room/${roomId}/${myKey}`, {}, {});
+        }
+
+        stompClient.disconnect();
+        localStream.getTracks().forEach(track => track.stop());
+        localStreamElement.style.display = 'none';
+        document.querySelector('#startStreamBtn').textContent = '상담시작';
+        document.querySelector('#startStreamBtn').classList.remove('active');
+        document.querySelector('#startStreamBtn').disabled = false;
+        otherKeyList = [];
+        console.log('상담 종료');
+        
+        // 윈도우 닫기
+        window.close();
+    };
+
+    const showNotification = (message) => {
+        const notificationArea = document.querySelector('#notificationArea');
+        const notification = document.createElement('div');
+        notification.classList.add('notification');
+        notification.textContent = message;
+        notificationArea.appendChild(notification);
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    };
+
+    const createPeerConnection = (otherKey) => {
+        const pc = new RTCPeerConnection();
+        try {
+            pc.addEventListener('icecandidate', event => {
+                onIceCandidate(event, otherKey);
+            });
+            pc.addEventListener('track', event => {
+                onTrack(event, otherKey);
+            });
+            if (localStream !== undefined) {
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                });
+            }
+            console.log('PeerConnection created for key:', otherKey);
+        } catch (error) {
+            console.error('PeerConnection failed: ', error);
+        }
+        return pc;
+    };
+
+    let onIceCandidate = (event, otherKey) => {
+        if (event.candidate) {
+            console.log('ICE candidate');
+            stompClient.send(`/app/peer/iceCandidate/${otherKey}/${roomId}`, {}, JSON.stringify({
+                key: myKey,
+                body: event.candidate
+            }));
+        }
+    };
+
+    let sendOffer = (pc, otherKey) => {
+        pc.createOffer().then(offer => {
+            setLocalAndSendMessage(pc, offer);
+            stompClient.send(`/app/peer/offer/${otherKey}/${roomId}`, {}, JSON.stringify({
+                key: myKey,
+                body: offer
+            }));
+            console.log('Send offer to key:', otherKey);
+        });
+    };
+
+    let sendAnswer = (pc, otherKey) => {
+        pc.createAnswer().then(answer => {
+            setLocalAndSendMessage(pc, answer);
+            stompClient.send(`/app/peer/answer/${otherKey}/${roomId}`, {}, JSON.stringify({
+                key: myKey,
+                body: answer
+            }));
+            console.log('Send answer to key:', otherKey);
+        });
+    };
+
+    const setLocalAndSendMessage = (pc, sessionDescription) => {
+        pc.setLocalDescription(sessionDescription);
+    };
+
+    let onTrack = (event, otherKey) => {
+        console.log('onTrack event from key:', otherKey, event);
+        if (document.getElementById(`${otherKey}`) === null) {
+            const video = document.createElement('video');
+            video.autoplay = true;
+            video.controls = true;
+            video.id = otherKey;
+            video.srcObject = event.streams[0];
+            document.getElementById('remoteStreamDiv').appendChild(video);
+        }
+    };
+
+    window.onload = async function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        roomId = urlParams.get('roomId');
+        if (roomId) {
+            await startCam();
+            await connectSocket();
+        }
+    };
+
+    window.onbeforeunload = () => {
+        leaveStream();
+    };
+
+    document.querySelector('#toggleCameraBtn').addEventListener('click', async () => {
+        videoEnabled = !videoEnabled;
+        if (videoEnabled) {
+            await startCam();
+        } else if (localStream) {
+            localStream.getVideoTracks().forEach(track => track.stop());
+        }
+        const toggleCameraBtn = document.querySelector('#toggleCameraBtn');
+        toggleCameraBtn.textContent = videoEnabled ? '카메라On' : '카메라Off';
+    });
+
+    document.querySelector('#toggleMicBtn').addEventListener('click', async () => {
+        audioEnabled = !audioEnabled;
+        if (audioEnabled) {
+            await startCam();
+        } else if (localStream) {
+            localStream.getAudioTracks().forEach(track => track.stop());
+        }
+        const toggleMicBtn = document.querySelector('#toggleMicBtn');
+        toggleMicBtn.textContent = audioEnabled ? '마이크On' : '마이크Off';
+    });
+</script>
+</body>
+</html>

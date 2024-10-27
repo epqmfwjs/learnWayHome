@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/globalstyle.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <div class="left-panel d-flex justify-content-center align-items-center">
+        <p>목표에 도달하는 길,<br>LearnWay가 함께합니다!</p>
+    </div>
+    <div class="right-panel d-flex flex-column justify-content-center align-items-center">
+        <img src="/img/mainLogo.png" alt="Logo" class="mb-4"  width="360" height="auto">
+        <div class="form-group mb-4">
+            <form id="login-button" action="/consult/loginChange/consult" method="get">
+                <button id="generalLoginBtn" class="btn btn-secondary" type="button">Student Login</button>
+                <button id="counselorLoginBtn" class="btn btn-outline-secondary" type="submit">Consult Login</button>
+            </form>
+        </div>
+        <form th:action="@{/login}" method="post" class="login-form">
+            <div class="form-group mb-3">
+                <label for="username">아이디</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="form-group mb-5">
+                <label for="password">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="form-group mb-5">
+                <button type="submit" class="btn btn-outline-primary btn-block">로그인</button>
+            </div>
+        </form>
+        <p class="additional-links">
+            <a th:href="@{/member/join}">회원가입</a> |
+            <a href="/password/find">비밀번호 찾기</a>
+        </p>
+    </div>
+</div>
+
+<!-- 로그인 실패 시 모달 창 -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">로그인 오류</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p>아이디 혹은 비밀번호를</p>
+                <p>정확하게 입력해 주세요.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 비밀번호 변경 후 성공 메시지 모달 -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">알림</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${message}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ID 찾기 결과 모달 -->
+<div class="modal fade" id="idFindModal" tabindex="-1" role="dialog" aria-labelledby="idFindModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="idFindModalLabel">ID 찾기 결과</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>입력해주신 정보로 가입된 아이디는 다음과 같습니다.</p>
+                <ul id="foundIds"></ul>
+                <p>로그인 혹은 비밀번호 찾기를 진행해 주세요.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    // 로그인 실패 시 모달
+    $(document).ready(function() {
+        if (window.location.search.includes('error=true')) {
+            $('#errorModal').modal('show');
+        }
+    });
+    // 비밀번호 찾기 후 로그인 창
+    $(document).ready(function() {
+        // URL에 passwordResetSuccess=true가 포함되어 있으면 성공 모달 표시
+        if (window.location.search.includes('passwordResetSuccess=true')) {
+            $('#successModal').modal('show');
+        }
+    });
+    // 아이디 찾기 모달
+    $(document).ready(function() {
+        // id-find 에서 idFindSuccess 값 받음(list)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('idFindSuccess')) {
+            const ids = urlParams.get('idFindSuccess').split(',');
+            const $foundIds = $('#foundIds');
+            $foundIds.empty();
+            ids.forEach(id => {
+                $foundIds.append(`<li>${id}</li>`);
+            });
+            $('#idFindModal').modal('show');
+        }
+    });
+</script>
+</body>
+</html>

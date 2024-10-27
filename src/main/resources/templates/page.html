@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>스케줄</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+        <link rel="stylesheet" href="/css/sample/sample.css" type="text/css"/><!-- 페이지에 사용할 CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </head>
+    <body>
+    <!-- SideBar 불러오는부분 -->
+    <div th:replace="sidebar :: sidebar"></div>
+
+    <!-- 메인 컨텐츠 이 div 안을 body라고 생각하고 쓰면 됩니다 -->
+    <div class="main__content">
+        <!-- 이곳에 작업합시다  -->
+        <div class="main__title"></div>
+    </div>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script><!-- 툴팁(tooltips)과 팝오버(popovers) 같은 UI 요소를 쉽게 관리 -->
+<script src="/js/consult/consultationReservation.js"></script><!-- 상담예약 javascript -->
+<script src="/js/consult/reservationList.js"></script><!-- 예약리스트 javascript -->
+</html>

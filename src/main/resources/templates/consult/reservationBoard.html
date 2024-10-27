@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnWay</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- 이모티콘 -->
+<link href='https://unpkg.com/@fullcalendar/core@5.11.0/main.min.css' rel='stylesheet' />
+<link href='https://unpkg.com/@fullcalendar/timegrid@5.11.0/main.min.css' rel='stylesheet' />
+
+<link rel="stylesheet" type="text/css" href="/css/consult/reservationBoard.css">
+<link rel="stylesheet" type="text/css" href="/css/consult/sidebarConsultantList.css">
+<link rel="stylesheet" type="text/css" href="/css/consult/sidebarReservationList.css">
+<link rel="stylesheet" type="text/css" href="/css/globalstyle.css">
+
+</head>
+<body>
+<!-- SideBar -->
+<div th:replace="sidebar :: sidebar"></div>
+
+<!-- 메인 컨텐츠 -->
+<div class="main__content">
+    <!-- <div class="main__content__title" name="titleHead">📅 상담예약</div> -->	
+		<input type="hidden" th:value="${memberId}" id="memberId">
+		<input type="hidden" th:value="${memberName}" id="memberName">
+            <!-- modal 추가 -->
+        <div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">화상상담예약</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <strong>
+                                <h3  style="text-align:center;">
+                                <label for="counselor" class="col-form-label" th:text="${consultantSubject}+' : ' + ' ' + ${consultantName} + '상담사님.'" style="font-weight: bold;" >상담사</label>
+                                </h3>
+                            </strong>
+                            <hr/><br/>
+                            <input type="hidden" th:value="${consultantId}" id="counselor">
+                            <label for="reservationId" class="col-form-label" style="font-weight: bold;" >요청상담내용(간단하게 적어주세요.)</label>
+                            <input type="text" class="form-control" id="reservationContent" name="reservationId">
+                            <label for="startTime" class="col-form-label" style="font-weight: bold;" >시작 시간</label>
+                            <input type="datetime-local" class="form-control" id="startTime" name="startTime" disabled>
+                            <label for="endTime" class="col-form-label" style="font-weight: bold;" >종료 시간</label>
+                            <input type="datetime-local" class="form-control" id="endTime" name="endTime" disabled>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-success float-right insertBtn" id="addCalendar">예약</button>
+                        <!-- <button type="button" class="btn btn-outline-danger" data-dismiss="modal" id="sprintSettingModalClose">취소</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- 예약 취소 모달 -->
+        <div class="modal fade" id="deleteEventModal" tabindex="-1" role="dialog" aria-labelledby="deleteEventLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteEventTitle">예약 취소</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="deleteEventId">
+                        정말로 이 예약을 취소하시겠습니까?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" id="deleteEvent">예약 취소</button>
+                        <!-- <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+                
+        <div id="calendarBox">
+            <div id='calendar'></div>
+        </div>
+        
+        <!-- 상담사 정보 모달 -->
+        <div class="modal fade" id="consultantInfoModal" tabindex="-1" role="dialog" aria-labelledby="consultantInfoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="consultantInfoModalLabel">상담사 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <img id="consultantPhoto" class="card-img-top" src="" alt="상담사 사진">
+                            <div class="card-body">
+                                <h5 class="card-title" id="consultantName"></h5>
+                                
+                                <p class="card-text" id="consultantSubject"></p>
+                                </br>
+                                <p class="card-text" id="consultantDescription"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="/js/icon.js"></script><!-- icon javascript -->
+<script src="/js/consult/reservationBoard.js"></script>
+<script src="/js/consult/consultationReservation.js"></script>
+<script src="/js/consult/reservationList.js"></script>
+  </body>
+</html>

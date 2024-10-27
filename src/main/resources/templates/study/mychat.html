@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>채팅방</title>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- 이모티콘 -->
+    <link rel="stylesheet" href="/css/study/mychat.css" type="text/css"/>
+    
+    
+<script th:inline="javascript">
+    var userImages = /*[[${userImages}]]*/ {};
+    var currentUserName = /*[[${currentUserName}]]*/ '';
+</script>
+
+
+<script>
+    function getFormattedTime() {
+        var now = new Date();
+
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+
+        var period = hours >= 12 ? '오후' : '오전';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0시를 12시로 변경
+
+        // 두 자리 숫자로 포맷
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+
+        var formattedTime = period + ' ' + hours + ':' + minutes;
+        return formattedTime;
+    }
+
+    $(document).ready(function () {
+        var roomId = $("#roomId").val();
+        var name = $("#name").val();
+
+        function getCurrentDateTime() {
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = ('0' + (now.getMonth() + 1)).slice(-2); // 월은 0부터 시작하므로 +1을 해준다. 두 자리로 표시하기 위해 slice를 사용
+            var day = ('0' + now.getDate()).slice(-2); // 일자도 두 자리로 표시하기 위해 slice를 사용
+            var hours = ('0' + now.getHours()).slice(-2); // 시간
+            var minutes = ('0' + now.getMinutes()).slice(-2); // 분
+            var seconds = ('0' + now.getSeconds()).slice(-2); // 초
+
+            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+        }
+
+        function addMessageToUI(content) {
+            var str = '';
+            if (content.type === 'ENTER') {
+                str = "<div class='message enter'>";
+                str += "<div class='bubble'>";
+                str += "<b>" + content.message + "</b><br/>";
+                str += "</div></div>";
+            } else if (content.type === 'CHAT') {
+                var userImage = userImages[content.name] || '/img/member/member-default.png';
+                if (content.name === name) {
+                    str = "<div class='message self'>";
+                    str += "<div class='message-content'>";
+                    str += "<img src='" + userImage + "' class='user-image' alt='User Image'>";
+                    str += "<div class='bubble'>";
+                    str += "<div class='name'>" + content.name + "</div>";
+                    str += "<div class='content'>" + content.message + "</div>";
+                    str += "<div class='time'>" + content.date + "</div>";
+                    str += "</div>";
+                    str += "</div></div>";
+                } else {
+                    str = "<div class='message other'>";
+                    str += "<div class='message-content'>";
+                    str += "<img src='" + userImage + "' class='user-image' alt='User Image'>";
+                    str += "<div class='bubble'>";
+                    str += "<div class='name'>" + content.name + "</div>";
+                    str += "<div class='content'>" + content.message + "</div>";
+                    str += "<div class='time'>" + content.date + "</div>";
+                    str += "</div>";
+                    str += "</div></div>";
+                }
+            }
+            $("#msgArea").append(str);
+            $("#msgArea").scrollTop($("#msgArea")[0].scrollHeight);
+        }
+
+        // 이전 채팅 내역 불러오기
+        $.getJSON("/chatroom/" + roomId + "/messages", function (data) {
+            data.forEach(function (message) {
+                var content = {
+                    type: 'CHAT',
+                    name: message.member.memberName,
+                    message: message.msg,
+                    date: message.datetime.replace("T", " ") // ISO 8601 형식에서 공백으로 변경
+                };
+                addMessageToUI(content);
+            });
+        });
+
+        var sock = new SockJS("/stomp/chat");
+        var stomp = Stomp.over(sock);
+
+        stomp.connect({}, function (frame) {
+            console.log("Connected: 연결 " + frame);
+            var datetime = getCurrentDateTime();
+
+            stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+                var content = JSON.parse(chat.body);
+                addMessageToUI(content);
+            });
+
+            stomp.send('/pub/chat/enter', {}, JSON.stringify({ type: 'ENTER', roomId: roomId, name: name, date:datetime}));
+        });
+
+        function sendMessage() {
+            var msg = $("#msg").val();
+            var datetime = getCurrentDateTime();
+            stomp.send('/pub/chat/message', {}, JSON.stringify({ type: 'CHAT', roomId: roomId, message: msg, name: name, date: datetime }));
+            $("#msg").val('');
+        }
+
+        $("#button-send").on("click", function () {
+            sendMessage();
+        });
+
+        $("#msg").on("keypress", function (e) {
+            if (e.which == 13) { // Enter key pressed
+                sendMessage();
+                return false; // Prevent the default action (form submission)
+            }
+        });
+    });
+</script>
+
+
+</head>
+<body>
+<div th:replace="sidebar :: sidebar"></div>
+<div id="main-content">
+    <div id="chat-container">
+        <div id="chat-header">
+            <span id="roomname" th:text="${roomName}"></span>
+
+            <input type="hidden" id="userImages" th:value="${userImages}">
+		    <input type="hidden" id="currentUserName" th:value="${currentUserName}">
+        </div>
+        <div id="msgArea"></div>
+        <div id="input-area">
+            <input type="text" id="msg" placeholder="메시지 입력">
+            <button id="button-send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <div id="participants">
+        <div class="participant-group">
+            <h4>방장</h4>
+            <ul>
+                <li th:each="host : ${chatListHost}">
+                    <span class="crown-icon">👑</span>
+                    <span th:text="${host.member.memberName}"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="participant-group">
+            <h4>참여자</h4>
+            <ul>
+                <li th:each="guest : ${chatListGuest}" th:text="${guest.member.memberName}"></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="roomId" th:value="${roomId}">
+<input type="hidden" id="name" th:value="${name}">
+</body>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="/js/consult/consultationReservation.js"></script>
+    <script src="/js/consult/reservationList.js"></script>
+    <script src="/js/icon.js"></script>
+</html>

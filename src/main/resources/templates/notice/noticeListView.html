@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LearnWay</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- 이모티콘 -->
+        <link rel="stylesheet" href="/css/notice/noticeListView.css" type="text/css"/>
+    </head>
+    <body>
+    <!-- SideBar 불러오는부분 -->
+    <div th:replace="sidebar :: sidebar"></div>
+    <!-- 메인 컨텐츠 이 div 안을 body라고 생각하고 쓰면 됩니다 -->
+    <div class="main__content">
+        <div class="notice-list">
+             <!-- 필터링 기능과 검색 기능  -->
+             <div class="d-flex justify-content-between mb-3 search-container">
+                <div>
+                    <button type="button" class="btn btn-outline-secondary mr-2" onclick="filterNotices('전체')">전체</button>
+                    <button type="button" class="btn btn-outline-secondary mr-2" onclick="filterNotices('점검')">점검</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="filterNotices('서비스')">서비스</button>
+                </div>
+                <div>
+                    <form action="/notice/noticeList" class="search-form" method="get">
+                        <input class="search-input" type="text" id="keyword" name="keyword" placeholder="공지사항 검색" aria-label="Search">             
+                       	 <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+            </div>
+			<ul class="list-group">
+				<!-- Priority 공지사항 -->
+			    <a th:href="@{/notice/detail/{id}(id=${priNotice.noticeId})}" class="list-group-item list-group-item-action notice-priority" th:each="priNotice : ${priNotice}">
+			        <div class="d-flex justify-content-between align-items-center">
+			            <div>
+			                <span><img src="/img/notice/notice.png" alt="공지" style="width: 20px; height: 20px; margin-right: 5px; vertical-align:middle; "></span>
+			                <span th:text="${priNotice.noticeTitle}" style="font-weight: bold;"></span>
+			            </div>
+			            <div class="text-right" th:text="${#temporals.format(priNotice.createDate, 'yyyy.MM.dd')}"></div>
+			        </div>
+			    </a>
+			    <!-- 일반 공지사항 -->
+			    <a th:href="@{/notice/detail/{id}(id=${notice.noticeId})}" class="list-group-item list-group-item-action" th:each="notice : ${notice}">
+			        <div class="d-flex justify-content-between align-items-center">
+			            <div>
+			                <span th:text="${notice.noticeTitle}"></span>
+			            </div>
+			            <div class="text-right" th:text="${#temporals.format(notice.createDate, 'yyyy.MM.dd')}"></div>
+			        </div>
+			    </a>
+			</ul>
+			<!-- Priority 공지사항 끝 -->	
+                <!-- 페이징 처리 코드 추가 -->
+			<div class="footer-container">
+				<div class="d-flex justify-content-end add-btn">
+				  <a href="/notice/writeView" class="btn btn-outline-info my-2 my-sm-0 ml-3" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">글쓰기</a>
+				</div>
+                <nav aria-label="Page navigation" th:if="${notice.totalPages > 0}">   
+                    <ul class="pagination justify-content-center">
+                        <!-- 이전 페이지 처리 -->
+                        <li class="page-item" th:classappend="${notice.first} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="@{/notice/noticeList(page=${notice.number - 1})}" 
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        <li class="page-item" 
+                        th:each="pageNum : ${#numbers.sequence(0, notice.totalPages - 1)}"
+                        th:classappend="${pageNum == notice.number} ? 'active'">
+                        <a class="page-link btn btn-info" 
+                           th:href="@{/notice/noticeList(page=${pageNum})}" 
+                           th:text="${pageNum + 1}"></a>
+                        </li> 
+                        <!-- 다음 페이지 처리 -->
+                        <li class="page-item" th:classappend="${notice.last} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="@{/notice/noticeList(page=${notice.number + 1})}" 
+                               aria-label="Next"> 
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+              </div>
+                <!-- 페이징 처리 끝 -->
+        </div>
+    </div>
+<script>
+
+//카테고리 버튼 클릭 이벤트 핸들러
+function filterNotices(category) {
+	console.log(category);
+
+	 // 현재 URL 가져오기
+    var currentUrl = new URL(window.location.toString());
+
+    // 새로운 URLSearchParams 객체 생성
+    var searchParams = new URLSearchParams(currentUrl.search);
+
+    // category 파라미터 수정
+    if (category === '전체') {
+        searchParams.delete('category');
+    } else {
+        searchParams.set('category', category);
+    }
+
+    // AJAX 요청
+    $.ajax({
+        url: '/notice/noticeList',
+        method: 'GET',
+        data: searchParams.toString(),
+        success: function(response) {
+        	// 받은 HTML에서 일반 공지사항 목록 부분만 추출하여 업데이트
+            var noticeList = $(response).find('.list-group .list-group-item:not(.notice-priority)');
+            $('.list-group .list-group-item:not(.notice-priority)').remove();
+            $('.list-group').append(noticeList);
+            
+            // 페이징 업데이트 (필요한 경우)
+            var pagination = $(response).find('.footer-container').html();
+            $('.footer-container').html(pagination);
+
+            // URL 변경 (새로고침 없이)
+            history.replaceState(null, null, currentUrl.toString() + '?' + searchParams.toString());
+        },
+        error: function(xhr, status, error) {
+            console.error("Error occurred: " + error);
+        }
+    });
+}
+</script>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script><!-- 툴팁(tooltips)과 팝오버(popovers) 같은 UI 요소를 쉽게 관리 -->
+<script src="/js/consult/consultationReservation.js"></script><!-- 상담예약 javascript -->
+<script src="/js/consult/reservationList.js"></script><!-- 예약리스트 javascript -->
+<script src="/js/icon.js"></script><!-- icon javascript -->
+</html>

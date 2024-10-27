@@ -1,0 +1,74 @@
+<!-- <!DOCTYPE html> -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LearnWay</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+        <link rel="stylesheet" href="/css/notice/noticeDetailView.css" type="text/css"/>
+    </head>
+    <body>
+    <!-- SideBar 불러오는부분 -->
+    <div th:replace="sidebar :: sidebar"></div>
+
+    <!-- 메인 컨텐츠 이 div 안을 body라고 생각하고 쓰면 됩니다 -->
+    <div class="main__content">
+	    <div class="container">
+	        <div class="row">
+                <div class="notice-detail">
+                    <h2 class="mb-3" th:text="${notice.noticeTitle}">글 제목</h2>
+                    <div class="media mb-3">
+                         <img th:src="${notice.memberId.memberImage}" class="mr-3 rounded-circle" alt="작성자 이미지" width="64" height="64"> 
+                        <div class="media-body">
+                            <p class="mt-0 author-info" th:text="${notice.memberId.memberId}">작성자명</p>
+                            <p class="author-info" th:text="${#temporals.format(notice.createDate, 'yyyy-MM-dd')}">작성일자</p>
+                        </div>
+                    </div>
+                    <hr>
+					<div class="notice-content">
+					    <img th:if="${notice.noticeImgPath != null and !notice.noticeImgPath.isEmpty()}" 
+					         th:src="${notice.noticeImgPath}" 
+					         alt="글 이미지">				
+                    	<p th:utext="${notice.noticeContent}">글 내용</p>
+                    </div>
+                    <hr>
+                    <div class="row notice-navigation">
+					    <div>
+					        <a th:href="@{/notice/detail/{id}(id=${notice.preNotice?.noticeId})}" class="text-secondary"
+					           th:if="${notice.preNotice != null}">
+					            <strong>이전</strong><span th:text="${notice.preNotice.noticeTitle}"></span>
+					        </a>
+					        <span class="text-secondary" th:if="${notice.preNotice == null}">이전글이 없습니다.</span>
+					    </div>
+					</div>
+					<hr class="my-2">
+					<div class="row notice-navigation">
+					    <div>
+					        <a th:href="@{/notice/detail/{id}(id=${notice.nextNotice?.noticeId})}" class="text-secondary"
+					           th:if="${notice.nextNotice != null}">
+					            <strong>다음</strong><span th:text="${notice.nextNotice.noticeTitle}"></span>
+					        </a>
+					        <span class="text-secondary" th:if="${notice.nextNotice == null}">다음글이 없습니다.</span>
+					    </div>
+					</div>
+					<hr class="my-2">
+					<div class="text-right mt-3">
+					    <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+					        <a th:href="@{/notice/rewriteView/{id}(id=${notice.noticeId})}" class="btn btn-outline-success">수정</a>
+					        <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}" class="btn btn-outline-danger">삭제</a>
+					    </span>
+					    <a th:href="@{/notice/noticeList}" class="btn btn-outline-secondary">목록</a>
+					</div>
+                </div>
+	        </div>
+	    </div>
+	</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script><!-- 툴팁(tooltips)과 팝오버(popovers) 같은 UI 요소를 쉽게 관리 -->
+<script src="/js/consult/consultationReservation.js"></script><!-- 상담예약 javascript -->
+<script src="/js/consult/reservationList.js"></script><!-- 예약리스트 javascript -->
+</html>

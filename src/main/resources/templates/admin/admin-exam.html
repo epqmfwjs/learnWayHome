@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>어드민 예시</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/admin/masterdata.js"></script>
+    <link rel="stylesheet" href="/css/admin/admin.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div th:replace="admin/admin-sidebar :: sidebar"></div>
+        </div>
+        <div class="col-md-10 mt-5">
+            <!-- 여기에 컨텐츠 입력 -->
+            <h2>admin page 예시</h2>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+@import "../globalstyle.css";
+@import "../consult/sidebarConsultantList.css";
+@import "../consult/sidebarReservationList.css";
+
+
+.notice-content {
+  min-height: 450px; /* 원하는 높이로 조절 가능 */
+  padding: 20px;
+  overflow: auto; /* 내용이 넘칠 경우 스크롤바 표시 */
+}
+
+.notice-content img {
+  max-width: 30%; /* 이미지의 최대 너비를 컨테이너의 너비에 맞춤 */
+  height: auto; /* 이미지의 높이를 자동으로 조절 */
+  margin: 0 auto 15px; /* 이미지를 가운데 정렬하고 아래 여백 추가 */
+  display: block; /* 이미지를 블록 레벨 요소로 설정 */
+}
+
+.notice-detail {
+    background-color: #fff;
+    width: 100%;
+    max-width: 1300px;
+    margin-top: 7vh;
+    height: 85vh;
+} 
+
+.notice-detail h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.media-body .author-info {
+    font-size: 16px;
+    color: #666;
+}
+
+.notice-detail hr {
+    border-top: 1px solid #e0e0e0;
+    margin: 15px 0;
+}
+
+.notice-detail p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.notice-detail .text-secondary strong{
+    color: #666;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.notice-detail a.text-secondary span {
+    margin-left: 15px; 
+}
+
+.notice-detail .btn {
+    margin-left: 10px;
+}
+
+.notice-detail .text-right {
+    margin-top: 20px;
+}
+
+.notice-navigation {
+    margin: 10px 0;   /* 위아래로 10px의 마진 */
+}
+
+.notice-navigation a.text-secondary,
+.notice-navigation span.text-secondary {
+    display: block;  /* 링크나 텍스트를 블록 레벨 요소로 만들어 한 줄을 차지하게 함 */
+}
+

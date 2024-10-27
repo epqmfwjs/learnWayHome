@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sidebar</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/member/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/admin/sidebar.js"></script>
+</head>
+<body>
+<div id="sidebar" th:fragment="sidebar">
+    <div class="row">
+        <!-- 위쪽 열: 로고, 관리자 페이지, 사용자 정보 -->
+        <div class="col-md-12 mb-4">
+            <!-- 로고 -->
+            <a href="/admin/main" class="d-block text-center mb-3">
+                <img src="/img/mainLogo.png" alt="이미지 설명" class="img-fluid" style="max-width: 100%;">
+            </a>
+            <!-- 관리자 페이지 -->
+            <p class="text-center text-danger"><i class="fas fa-user-shield"></i> ADMIN Page</p>
+
+            <!-- 사용자 정보 -->
+            <div class="text-center mb-4">
+                <img th:src="@{${#authentication.principal.image}}" alt="User Image" class="img-fluid rounded-circle" style="width: 100px; height: 100px;" onerror="this.onerror=null;this.src='/img/member/member-default.png';">
+                <p class="mt-2 mb-0" th:text="${#authentication.principal.name}"></p>
+            </div>
+        </div>
+
+        <!-- 아래쪽 열: 메뉴 항목 -->
+        <div class="col-md-12 mt-5">
+            <div class="list-group text-center sidebar-menu">
+                <a href="/admin/masterdata" class="list-group-item list-group-item-action">기준 정보 관리</a>
+                <a href="/member/members" class="list-group-item list-group-item-action">회원 정보 조회</a>
+                <a href="/notice/noticeList" class="list-group-item list-group-item-action">공지 사항 등록</a>
+                <a href="/admin/consult/join" class="list-group-item list-group-item-action">컨설턴트 등록</a>
+                <a href="/loginOk" class="list-group-item list-group-item-action">메인화면</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

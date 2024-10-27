@@ -1,0 +1,374 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세보기</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/study/studyDetail.css" type="text/css"/>
+
+</head>
+<body>
+
+<div class="sidebar-container">
+<div th:replace="sidebar :: sidebar"></div>
+</div>
+<div th:replace="sidebar :: sidebar"></div>
+<div class="container content-wrapper">
+    <div id="detail-container">
+        <div class="detail-row">
+            <div class="detail-col-left">
+                <h2 class="title" th:text="${study.title}">제목</h2><hr>
+                <p class="lead mt-2" th:utext="${study.content}">내용</p>
+            </div>
+            <div class="detail-col-right">
+                <div class="author-section">
+                    작성자: <span class="author-name" th:each="member : ${study.member}" th:text="${member.memberName}">Member</span>
+                </div>
+                <div class="date-section mt-5">
+                    <div class="form-group">
+                        <label for="startdate">시작일:</label>
+                        <input type="date" id="startdate" name="startdate" class="form-control form-control-sm" th:value="${study.startdate}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="enddate">종료일:</label>
+                        <input type="date" id="enddate" name="enddate" class="form-control form-control-sm" th:value="${study.enddate}" readonly>
+                    </div>
+                </div>
+                <div id="image-preview">
+                    <div th:each="image : ${imgList}">
+                       <!--  <p><strong>문제 정답:</strong> <span th:text="${image.correct}">문제 정답</span></p> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hashtag-section">
+            <span class="hashtag" th:each="tag : ${studyTag}" th:text="${tag.tag}"></span>
+        </div>
+
+        <div class="comment-section">
+            <div class="card mb-2">
+                <div class="card-body">
+                   <ul class="list-group list-group-flush" id="replyList">
+  <li class="list-group-item">
+    <textarea class="form-control" id="content" name="content" rows="3" ></textarea>
+    <div class="action-buttons d-flex justify-content-start">
+      <button type="button" id="addReplyButton" class="btn btn-outline-secondary mr-2">댓글</button>
+                            </div>
+                            <div class="action-buttons d-flex justify-content-end mt-2">
+                            
+                            <div th:each="chatRoom : ${chatRoom}">
+                            <button type="button" id="chatenter" name="chatenter" class="btn btn-outline-info mr-2" 
+                            th:if="${chatRoom.chatroomid} != 0 and ${chatRoom.member.memberId} != ${member}">
+                            채팅방입장
+                            </button>
+   							 </div>
+                                <div th:if="${hostList==true}" class="ml-2">
+                                    <form action="/studyupdateview" method="post" class="d-inline">
+                                        <input type="hidden" id="postid" name="postid" th:value="${study.postid}">
+                                        <input type="submit" value="수정" class="btn btn-outline-success">
+                                    </form>
+                                    <button class="btn btn-outline-danger mr-2" id="boarddelete" name="boarddelete">삭제</button>
+                                </div>
+                                <a id="listBtn" class="btn btn-outline-secondary mr-2">글목록</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <input type="hidden" th:value="${study.postid}" id="postid" name="postid">
+    <input type="hidden" th:value="${study.member.memberName}" name="memberName" id="memberName">
+    <div th:each="chatRoom : ${chatRoom}">
+        <input type="hidden" th:value="${chatRoom.chatroomid}" name="chatroomid" id="chatroomid">
+    </div>
+    <div th:each="image : ${imgList}">
+        <input type="hidden" id="imgpath" th:value="${image.imgpath}">
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> 
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">정답 제출</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div th:each="image : ${imgList}">
+                    <img th:src="${image.imgpath}" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
+                    <input type="hidden" id="imgpath" th:value="${image.imgpath}">
+                    <input type="hidden" id="problemCorrect" th:value="${image.correct}">
+                </div>
+                <div class="mb-3">
+                    <label for="correct" class="form-label">정답</label>
+                    <input type="text" class="form-control" id="correct" name="correct">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-info" id="correct_ck" >정답 제출</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    chatenter();
+    correct_ck();
+    addReply();
+    loadReplyList(); // 페이지 로드 시 기존 댓글 목록 불러오기
+    clickDelete(); //게시글 삭제 메서드
+}); 
+
+/* 삭제버튼 js */
+ 
+function clickDelete() {
+	
+	var postId = $('#postid').val();
+	
+    $('#boarddelete').click(function() {
+        if (confirm("정말 삭제하시겠습니까?")) {
+            if (confirm("생성된 채팅방도 삭제됩니다.")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/study/delete",
+                    data: JSON.stringify({ postid: postId}),
+                    contentType: "application/json",
+                    success: function(data) {
+                        alert('게시글이 삭제되었습니다.');
+                        window.location.href = "/studylist";
+                        // 성공 시 추가로 실행할 코드가 있다면 여기에 작성
+                    },
+                    error: function(error) {
+                        console.log('에러', error);
+                        alert('삭제 중 오류가 발생했습니다.');
+                    }
+                });
+            } 
+        } else {
+            return false;
+        }
+    });
+}
+
+ 
+ 
+
+function chatenter() {
+    $('#chatenter').click(function(event) {
+        event.preventDefault(); // 기본 이벤트 동작 방지
+
+        var status = null;
+        var roomId = $('#chatroomid').val();
+        var correct = $('#problemCorrect').val();
+        var inputData = $('#correct').val();
+        var postId = $('#postid').val();
+
+        console.log(inputData + ' 입력값');
+        console.log(correct + ' 정답');
+        
+        $.ajax({ 
+            type: "POST",
+            url: "/api/problemCheck",
+            data: JSON.stringify({ postId: postId }),
+            contentType: "application/json",
+            success: function(response) {
+                if(response == true){
+                    alert("이미 푼 문제입니다.");
+                } else {
+                    // 모달을 수동으로 엽니다.
+                    $('#exampleModal').modal('show');
+                }
+            },
+            error: function(error) {
+                console.log('에러발생: ' + error);
+            }
+        }); 
+    });
+}
+
+/* 정답체크 js */
+function correct_ck() {
+    $('#correct_ck').click(function() {
+        var status = null;
+        var roomId = $('#chatroomid').val();
+        var correct = $('#problemCorrect').val();
+        var inputData = $('#correct').val();
+        var postId = $('#postid').val();
+
+        console.log(inputData + ' 입력값');
+        console.log(correct + ' 정답');
+      
+        if (inputData === correct) {
+            alert('정답입니다.');
+            status = 1;
+            $.ajax({
+            	 type: "POST",
+            	 url: "/api/member/correct",
+            	 data: JSON.stringify({ status: status, roomId: roomId, postId: postId }),
+            	 contentType: "application/json",
+                 dataType: "json",
+                success: function(data) {
+                    console.log("성공");
+                    $.ajax({
+                        type: "POST",
+                        url: "/joinRoom",
+                        data: JSON.stringify({ roomId: roomId, postId: postId }),
+                        contentType: "application/json",
+                        success: function(response) {
+                            console.log("2차 성공");
+                            if (confirm("채팅방 목록으로 이동하시겠습니까?")){
+                            window.location.href = "/learnway/chat";}
+                            else {
+                            	return false;
+                            }
+                        },
+                        error: function(error) {
+                            console.log('2차 에러');
+                        }
+                    });
+                },
+                error: function(error) {
+                    console.log('에러');
+                }
+            });
+        } else {
+            alert('오답입니다.');
+            status = 0;
+            $.ajax({
+            	 type: "POST",
+            	 url: "/api/member/correct",
+            	 data: JSON.stringify({ status: status, roomId: roomId, postId: postId }),
+            	 contentType: "application/json",
+                 dataType: "json",
+                success: function(data) {
+                    console.log("성공");
+                    $('#exampleModal').modal('hide');
+                   
+                },
+                error: function(error) {
+                    console.log('에러');
+                }
+            });
+            
+        }
+    });
+}
+
+
+
+/* 댓글저장 ajax */
+function addReply() {
+    $('#addReplyButton').click(function() { // 댓글 추가 버튼 클릭 시
+        var postId = $('#postid').val();
+        var memberId  = $('#memberName').val();
+        var content = $('#content').val();
+        var date = getCurrentDateTime();
+
+        console.log(postId);
+        console.log(memberId);
+        console.log(content);
+        console.log(date);
+        $.ajax({
+            type: "POST",
+            url: "/api/member/replyadd",
+            data: JSON.stringify({ postId: postId, memberId: memberId, content: content, date: date }),
+            contentType: "application/json",
+            datatype: "json",
+            success: function(data) {
+                console.log("성공");
+                updateReplyList(data);
+                $('#content').val('');
+            },
+            error: function(error) {
+                console.log('에러');
+            }
+        });
+    });
+}
+
+
+/*  댓글 불러오기  */
+function loadReplyList() {
+    var postId = $('#postid').val();
+    $.ajax({
+        type: "POST",
+        url: "/api/member/replylist",
+        data: JSON.stringify({ postId: postId}),
+        contentType: "application/json",
+        success: function(replyList) {
+            console.log("댓글 목록 불러오기 성공");
+            updateReplyList(replyList);
+        },
+        error: function(error) {
+            console.log("댓글 목록 불러오기 에러");
+        }
+    });
+}
+
+function getCurrentDateTime() {
+    var now = new Date();
+    var utcNow = now.getTime() + (now.getTimezoneOffset() * 60000); // 현재 시간을 UTC로 변환
+    var koreaTime = new Date(utcNow + (9 * 3600000)); // UTC 시간에 9시간을 더함
+
+    var year = koreaTime.getFullYear();
+    var month = ('0' + (koreaTime.getMonth() + 1)).slice(-2);
+    var day = ('0' + koreaTime.getDate()).slice(-2);
+    var hours = ('0' + koreaTime.getHours()).slice(-2);
+    var minutes = ('0' + koreaTime.getMinutes()).slice(-2);
+    var seconds = ('0' + koreaTime.getSeconds()).slice(-2);
+    var milliseconds = ('00' + koreaTime.getMilliseconds()).slice(-3);
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+}
+
+function updateReplyList(replyList) {
+	  var replyListElement = $('#replyList');
+	  replyListElement.find('.list-group-item').not(':last').remove();
+
+	  replyList.forEach(function(reply) {
+	    var date = new Date(reply.date);
+	    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+	    var day = ('0' + date.getDate()).slice(-2);
+	    var hours = ('0' + date.getHours()).slice(-2);
+	    var minutes = ('0' + date.getMinutes()).slice(-2);
+
+	    var formattedDate = `${month}-${day} ${hours}:${minutes}`;
+	    
+	    var listItem = $('<li class="list-group-item reply-item"></li>');
+	    var replyContent = `
+	      <div class="reply-header">
+	        <strong class="reply-author">${reply.memberName}</strong>
+	        <small class="reply-date">${formattedDate}</small>
+	      </div>
+	      <div class="reply-content">
+	        <p>${reply.content}</p>
+	      </div>
+	    `;
+	    
+	    listItem.html(replyContent);
+	    replyListElement.find('.list-group-item:last').before(listItem);
+	  });
+	}
+	
+document.getElementById("listBtn").addEventListener("click", function() {
+    	 window.history.back();
+    
+});
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="/js/consult/consultationReservation.js"></script>
+<script src="/js/consult/reservationList.js"></script>
+<script src="/js/icon.js"></script>
+
+</body>
+</html>

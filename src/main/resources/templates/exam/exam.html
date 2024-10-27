@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- 이모티콘 -->
+    <link rel="stylesheet" href="/css/exam/exam.css" type="text/css"/>
+</head>
+<body id="exam-root">
+<!-- SideBar 불러오는부분 -->
+<div th:replace="sidebar :: sidebar"></div>
+
+<!-- 메인 컨텐츠 이 div 안을 body라고 생각하고 쓰면 됩니다 -->
+<div class="main__content">
+    <!-- 이곳에 작업합시다  --> 
+
+    <div class="exam__container">
+        <div class="exam__btn-box">
+            <button type="button" class="btn exam__reg-btn" data-toggle="modal" data-target="#examModal">
+                시험 등록
+            </button>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>시험 유형</th>
+                    <th>시험 이름</th>
+                    <th>시험 날짜</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${examList.content}" style="cursor: pointer;">
+                    <td th:onclick="|location.href='@{/exam/detail/{id}(id=${item.examId})}'|" >
+                        <a th:href="@{/exam/detail/{id}(id=${item.examId})}" class="exam__item__info-box">
+                            <span th:text="${item.examType.examTypeName}"></span>
+                        </a>
+                    </td>
+                    <td th:onclick="|location.href='@{/exam/detail/{id}(id=${item.examId})}'|" >
+                        <a th:href="@{/exam/detail/{id}(id=${item.examId})}" class="exam__item__info-box">
+                            <span th:text="${item.examName}"></span>
+                        </a>
+                    </td>
+                    <td th:onclick="|location.href='@{/exam/detail/{id}(id=${item.examId})}'|" >
+                        <a th:href="@{/exam/detail/{id}(id=${item.examId})}" class="exam__item__info-box">
+                            <span th:text="${item.examDate}"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <button type="button" th:value="${item.examId}" class="btn exam__modㅡbtn" data-toggle="modal" data-target="#examModModal">
+                            수정
+                        </button>
+                        <form th:action="@{/exam/delete}" method="post" class="m-0 exam__delete-btn-form">
+                            <input type="hidden" name="examId" th:value="${item.examId}" required />
+                            <button class="exam__item__delete-btn btn clickable" type="submit">
+                                삭제
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이지네이션 -->
+
+
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" th:if="${examList.hasPrevious()}">
+                <a class="page-link" th:href="@{/exam/list/{pageNo}(pageNo=${examList.previousPageable().pageNumber+1})}">«</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, examList.totalPages)}" th:classappend="${examList.number + 1== i} ? 'active'">
+                <a class="page-link" th:href="@{/exam/list/{pageNo}(pageNo=${i})}" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:if="${examList.hasNext()}">
+                <a class="page-link" th:href="@{/exam/list/{pageNo}(pageNo=${examList.nextPageable().pageNumber+1})}">»</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="modal fade" id="examModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">시험 등록</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/exam/register" method="post">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="exam__modal__form-name">시험 이름</label>
+                                <input type="text" class="form-control" id="exam__modal__form-name" name="examName" required placeholder="시험 이름을 입력하세요">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="exam__modal__form-type">시험 종류</label>
+                                <select class="form-control" id="exam__modal__form-type" name="examTypeName" required>
+                                    <option th:each="item:${examTypes}" th:text="${item.getExamTypeName()}" th:value="${item.getExamTypeName()}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label >시험기간</label>
+                            <div>
+                                <input type="date" class="form-control" id="exam__modal__form-date" name="examDate" required>
+                                <span>부터</span>
+                                <input type="date" class="form-control" id="exam__modal__form-end-date" name="examEndDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exam__modal__form-memo">메모</label>
+                            <textarea class="form-control" id="exam__modal__form-memo" name="examMemo" rows="3" placeholder="메모를 입력하세요"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-success float-right insertBtn">등록</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="examModModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">시험 수정</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/exam/update" method="post">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="exam__modal__form-name">시험 이름</label>
+                                <input type="text" class="form-control" id="exam__mod-modal__form-name" name="examName" required placeholder="시험 이름을 입력하세요">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="exam__modal__form-type">시험 종류</label>
+                                <select class="form-control" id="exam__mod-modal__form-type" name="examTypeName" required>
+                                    <option th:each="item:${examTypes}" th:text="${item.getExamTypeName()}" th:value="${item.getExamTypeName()}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label >시험기간</label>
+                            <div>
+                                <input type="date" class="form-control" id="exam__mod-modal__form-date" name="examDate" required>
+                                <span>부터</span>
+                                <input type="date" class="form-control" id="exam__mod-modal__form-end-date" name="examEndDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exam__modal__form-memo">메모</label>
+                            <textarea class="form-control" id="exam__mod-modal__form-memo" name="examMemo" rows="3" placeholder="메모를 입력하세요"></textarea>
+                        </div>
+                        <input type="hidden" id="exam__mod-modal__form-examId" name="examId">
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-success float-right insertBtn">등록</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="/js/exam/exam.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script><!-- 툴팁(tooltips)과 팝오버(popovers) 같은 UI 요소를 쉽게 관리 -->
+<script src="/js/consult/consultationReservation.js"></script><!-- 상담예약 javascript -->
+<script src="/js/consult/reservationList.js"></script><!-- 예약리스트 javascript -->
+<script src="/js/icon.js"></script><!-- icon javascript -->
+</html>

@@ -1,0 +1,68 @@
+@import "../globalstyle.css";
+@import "../consult/sidebarConsultantList.css";
+@import "../consult/sidebarReservationList.css";
+
+
+.exam-detail__row-input{
+    height: 80%;
+    width: 40px;
+}
+
+.exam-detail__title{
+    display: flex;
+}
+.exam-detail__title>span{
+    margin: 0 10px 0 10px;
+}
+
+.exam-detail__container{
+    width: 100%;
+    max-width: 1320px;
+    height: 85vh;
+    margin-top: 7vh;
+    padding: 0 10px 0 10px;
+}
+.exam-detail__btn-container{
+    margin-bottom: 1rem;
+}
+.exam-detail__reg-btn{
+    color: #fff;
+    background-color: #343a40;
+    border-color: var(--learnwayBlack);
+    cursor: pointer;    
+}
+.exam-detail__reg-btn:hover{
+    color: #fff;
+    background-color: var(--learnwayBlue);
+    border-color: var(--learnwayBlue);
+}
+
+.exam-detail__go-list-btn{
+    color: #343a40;
+    background-color: #fff;
+    border-color: #343a40;
+    cursor: pointer;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.exam-detail__go-list-btn:hover{
+    color: #fff;
+    fill: #fff;
+    background-color: var(--learnwayBlack);
+}
+.exam-detail__go-list-btn>svg{
+    fill:#343a40;
+    height: 1rem;
+}
+.exam-detail__go-list-btn:hover>svg{
+    fill:#fff;
+}
+
+.ed-score{
+    margin-right: 3px;
+}
+.ed-exscore{
+    margin-left: 3px;
+}

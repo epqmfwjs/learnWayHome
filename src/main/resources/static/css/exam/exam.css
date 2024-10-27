@@ -1,0 +1,76 @@
+@import "/css/globalstyle.css";
+@import "/css/consult/sidebarConsultantList.css";
+@import "/css/consult/sidebarReservationList.css";
+
+
+td{
+    vertical-align: middle;
+}
+
+.exam__container{
+    width: 100%;
+    max-width: 1320px;
+    height: 85vh;
+    margin-top: 7vh;
+    padding: 0 10px 0 10px;
+}
+
+.exam__item__delete-btn{
+    background-color: #fff;
+    color: #343a40;
+    border: 1px solid #343a40;
+}
+.exam__item__delete-btn:hover{
+    background-color: tomato;
+    color: #fff;
+    border-color: tomato;
+}
+/* .exam__item__delete-btn>svg{
+    width: 10px;
+    fill:rgb(102, 102, 102);
+    transition: fill .1s ease-in-out;
+}
+.exam__item__delete-btn>svg:hover{
+    fill: tomato;
+} */
+
+.exam__btn-box{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.exam__reg-btn{
+    color: #fff;
+    background-color: #343a40;
+    border-color: var(--learnwayBlack);
+    cursor: pointer;
+}
+.exam__reg-btn:hover{
+    color: #343a40;
+    background-color: #fff;
+    border-color: #343a40;
+}
+.page-link{
+    color: #343a40;
+}
+.page-item.active .page-link {
+    background-color: #343a40;
+    border-color: #343a40   ; /* Optional: If you want to change border color */
+}
+.exam__delete-btn-form{
+    display: inline-block;
+    margin-right: 5px;
+}
+.exam__modㅡbtn{
+    display: inline block;
+    color: #fff;
+    background-color: #343a40;
+    border-color: var(--learnwayBlack);
+    cursor: pointer;
+}
+.exam__modㅡbtn:hover{
+    color: #fff;
+    background-color: var(--learnwayBlue);
+    border-color: var(--learnwayBlue);
+}

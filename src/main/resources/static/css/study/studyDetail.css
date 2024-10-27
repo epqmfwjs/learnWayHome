@@ -1,0 +1,131 @@
+@import url("../globalstyle.css");
+@import url("../consult/sidebarConsultantList.css");
+@import url("../consult/sidebarReservationList.css");
+
+.content-wrapper {
+        padding: 20px;
+        min-width: 1300px;
+ 	    height: 85vh;
+   	    margin-top: 7vh;
+    }
+    
+    .sidebar-container {
+     
+   position: fixed; /* 고정 위치 설정 */
+    top: 0; /* 상단에서 고정 */
+    left: 0; /* 왼쪽에서 고정 */
+    z-index: 100; /* 다른 요소 위에 출력되도록 z-index 설정 */
+    width: 250px; /* 사이드바의 너비 설정 */
+    height: 100%; /* 화면 전체 높이로 설정 */
+    background-color: #f8f9fa; /* 사이드바 배경색 설정 */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤바 표시 */
+    
+}
+
+    .title{
+    	font-size: 28px;
+    	font-weight: normal;
+    }
+    #detail-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+    .detail-row {
+        display: flex;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    .detail-col-left {
+        flex: 0 0 70%;
+        max-width: 70%;
+        padding: 0 15px;
+    }
+    .detail-col-right {
+        flex: 0 0 30%;
+        max-width: 30%;
+        padding: 0 15px;
+    }
+    .date-section {
+        font-size: 0.9em;
+        margin-bottom: 20px;
+    }
+    .hashtag-section {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+    .hashtag {
+        display: inline-block;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        padding: 3px 8px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        font-size: 0.9em;
+    }
+    #image-preview img {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border-radius: 3px;
+    }
+    .comment-section {
+        margin-top: 30px;
+    }
+    .author-section {
+        font-size: 0.9em;
+        text-align: right;
+        margin-bottom: 10px;
+    }
+    .author-name {
+        font-weight: bold;
+    }
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .action-buttons button, .action-buttons form {
+        margin-left: 2px;
+    }
+    
+     .reply-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px; 
+    padding-bottom: 8px;  
+  }
+
+  .reply-author {
+    font-size: 16px;
+    color: #333;
+  }
+
+  .reply-date {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .reply-content {
+    margin-top: 12px;
+  }
+
+  .reply-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+  }

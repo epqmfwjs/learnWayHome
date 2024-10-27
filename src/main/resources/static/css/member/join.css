@@ -1,0 +1,76 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.container-fluid {
+    display: flex;
+    height: 100%;
+}
+
+.left-panel {
+    flex: 1;
+    background-color: #343A40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: bold;
+    padding: 6.5px; /* 패널 내용과 스크롤바 사이에 여백 추가 */
+    box-sizing: border-box;
+}
+
+.right-panel {
+    flex: 3;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto; /* 스크롤 추가 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.right-panel::-webkit-scrollbar {
+    width: 10px;
+}
+
+.right-panel::-webkit-scrollbar-thumb {
+    background-color: #6c757d;
+    border-radius: 10px;
+}
+
+.right-panel::-webkit-scrollbar-track {
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 700px;
+}
+
+.input-group .form-control {
+    flex: 1;
+}
+
+.input-group .input-group-append {
+    flex: 0 0 auto;
+}
+
+.required-label::after {
+    content: '*';
+    color: red;
+    margin-left: 5px;
+}
+
+.img-preview {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    margin-top: 500px;  /* 프로필 이미지 프리뷰 상단 여백 추가 */
+}

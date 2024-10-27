@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>참여중인 채팅방</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/css/study/chatList.css" type="text/css"/>
+</head>
+<body>
+    <div th:replace="sidebar :: sidebar"></div>
+    <div class="main__content">
+        <div class="content-wrapper">
+            <h1>참여중인 채팅방</h1>
+            
+            
+           <div class="chat-list">
+  <div class="chat-container" style="display: flex; flex-wrap: wrap; gap: 30px;">
+    <!-- list가 null이 아닌 경우 -->
+    <div th:each="item, iterStat : ${list}" class="chat-card" th:if="${list != null and iterStat.index < 6}" th:data-room-id="${item.chatRoom.chatroomid}">
+      <div class="chat-info">
+        <div class="chat-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <div class="chat-name" th:text="${item.chatRoom.roomname}"></div>
+        <div class="chat-host">방장: <span th:text="${item.chatRoom.member.memberName}"></span></div>
+        <button class="btn-enter">입장하기</button>
+      </div>
+    </div>
+    
+    <!-- myList가 null이 아닌 경우 -->
+    <div th:each="item, iterStat : ${myList}" class="chat-card" th:if="${myList != null and iterStat.index < 6}" th:data-room-id="${item.chatroomid}">
+      <div class="chat-info">
+        <div class="chat-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <div class="chat-name" th:text="${item.roomname}"></div>
+        <div class="chat-host">방장: <span th:text="${item.member.memberName}"></span></div>
+        <button class="btn-enter">입장하기</button>
+      </div>
+    </div>
+  </div>
+            
+            <div th:if="${myList == null}" class="alert alert-info mt-3">
+                <p>채팅방 멤버가 없습니다.</p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    
+    <script>
+        $(document).ready(function() {
+            $(".btn-enter").click(function() {
+                var roomId = $(this).closest('.chat-card').data("room-id");
+                window.location.href = "/enterRoom?roomId=" + roomId;
+            });
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="/js/consult/consultationReservation.js"></script>
+    <script src="/js/consult/reservationList.js"></script>
+    <script src="/js/icon.js"></script>
+</body>
+</html>

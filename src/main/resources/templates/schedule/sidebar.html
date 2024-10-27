@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+        }
+        #sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow:hidden;
+        }
+        #content {
+            flex: 1;
+            padding: 20px;
+        }
+        .sidebar-header {
+            padding: 10px 15px;
+            font-size: 1.2em;
+        }
+        .sidebar-item {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .sidebar-item:hover {
+            background-color: #495057;
+        }
+        .submenu {
+            display: none;
+            padding-left: 25px;
+        }
+        .submenu a {
+            color: #adb5bd;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+        }
+        .submenu a:hover {
+            color: white;
+        }
+        #consult-btn {
+            margin-top: auto;
+            margin-bottom: 20px;
+            margin-left: 15px;
+            margin-right: 15px;
+            padding: 10px;
+            border-radius: 20px;
+            background-color: #ffc107;
+            border: none;
+            color: #343a40;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        #consult-btn:hover {
+            background-color: #ffcd39;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <span>🚀 LearnWay</span>
+        </div>
+        <hr>
+        <div class="sidebar-item">
+            👤 회원님
+        </div>
+        <hr>
+        <div class="sidebar-item">
+            📊 스케줄 관리
+            <div class="submenu">
+                <a href="#">주간 관리</a>
+                <a href="#">월간 관리</a>
+            </div>
+        </div>
+        <div class="sidebar-item">
+            📝 성적 관리
+            <div class="submenu">
+                <a href="#">성적 입력</a>
+                <a href="#">성적 비교</a>
+            </div>
+        </div>
+        <div class="sidebar-item">
+            👥 커뮤니티
+            <div class="submenu">
+                <a href="#">Community</a>
+                <a href="#">Community</a>
+            </div>
+        </div>
+        <button id="consult-btn" class="btn">💬 상담하기</button>
+    </div>
+
+    <div id="content">
+        <!-- 프래그먼트가 들어갈 자리 -->
+        <div id="fragment-container">
+            <!-- 여기에 프래그먼트가 로드됩니다 -->
+        </div>
+
+        <!-- 팀원들의 페이지가 들어갈 자리 -->
+        <div id="team-pages">
+            <div>각자페이지코드</div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.sidebar-item').click(function() {
+                $(this).find('.submenu').slideToggle(300);
+            });
+        });
+    </script>
+</body>
+</html>

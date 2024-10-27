@@ -1,0 +1,49 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.container-fluid {
+    display: flex;
+    height: 100%;
+}
+
+.left-panel {
+    flex: 1;
+    background-color: /*#a3d8f4*/ #343A40 ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: bold;
+}
+
+.right-panel {
+    flex: 3;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    width: 80%;
+    max-width: 400px;
+}
+
+.login-form img {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+.additional-links a {
+    color: #6c757d; /* 회색으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.additional-links a:hover {
+    color: #5a6268; /* hover 시 조금 더 진한 회색 */
+}

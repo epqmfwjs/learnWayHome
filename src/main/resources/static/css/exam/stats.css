@@ -1,0 +1,54 @@
+@import "../globalstyle.css";
+@import "../consult/sidebarConsultantList.css";
+@import "../consult/sidebarReservationList.css";
+
+.stats__container{
+    max-width: 1320px;
+    width: 100%;
+    height: 85vh;
+    margin-top: 7vh;
+    padding: 0 10px 0 10px;
+}
+.chart-container{
+    height: 100%;
+}
+.chart {
+    width: 100%;
+}
+
+.stats__btn-box{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.stats__btn-box__col{
+    display: flex;
+    height: auto;
+}
+.stats__btn-box__col>select:first-child{
+    margin-right: 10px;
+    width: 130px;
+}
+.stats__btn-box__col>select:last-child{
+    margin-right: 10px;
+    width: 120px;
+}
+.stats__btn-box__col>button{
+    margin: 0 5px 0 5px;
+}
+.selected{
+    background-color: var(--learnwayBlack);
+    color: white;
+}
+.stats__date-input{
+    display: flex;
+    justify-content: center;
+}
+.stats__input-divider{
+    width: auto;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 10px 0 10px;
+}

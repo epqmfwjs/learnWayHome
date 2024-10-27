@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Consultant Update</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/js/member/consultJoin.js"></script>
+    <style>
+        .img-preview {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 mt-5" style="overflow-y: auto">
+            <h2 class="mb-4">컨설턴트 정보 수정</h2>
+            <form th:action="@{/consult/update}" method="post" th:object="${consultantUpdateDTO}" enctype="multipart/form-data" onsubmit="validateForm(event)">
+                <input type="hidden" id="isUsernameChecked" value="true">
+
+                <div class="text-center mb-4">
+                    <img id="imagePreview" th:src="${consultantUpdateDTO.imageUrl != null ? consultantUpdateDTO.imageUrl : '/img/member/member-default.png'}" alt="Image Preview" class="img-preview mb-3" />
+                    <input type="file" class="form-control-file" id="imageUpload" name="image" accept="image/*" onchange="validateImage(this)" style="display: none;">
+                    <button type="button" class="btn btn-outline-info" onclick="document.getElementById('imageUpload').click();">이미지 선택</button>
+                </div>
+                <div class="form-group">
+                    <label for="username">ID</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="username" name="username" th:field="*{username}" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" class="form-control" id="password" th:field="*{password}">
+                    <small id="passwordCheckResult" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">비밀번호 확인</label>
+                    <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}">
+                </div>
+                <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}">
+                </div>
+                <div class="form-group">
+                    <label for="subject">담당 과목</label>
+                    <input type="text" class="form-control" id="subject" th:field="*{subject}">
+                </div>
+                <div class="form-group">
+                    <label for="description">설명</label>
+                    <textarea class="form-control" id="description" th:field="*{description}"></textarea>
+                </div>
+                <div class="form-group d-flex justify-content-center">
+                    <button type="submit" class="btn btn-outline-success">수정</button>
+                    <a href="/consult/consultant"><button type="button" class="btn btn-outline-secondary">이전</button></a>
+                </div>
+                <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div> <!-- 서버측 오류 메시지 표시 -->
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

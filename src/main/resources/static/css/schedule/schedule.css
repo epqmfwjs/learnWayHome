@@ -1,0 +1,11 @@
+@import "../globalstyle.css";
+@import "../consult/sidebarConsultantList.css";
+@import "../consult/sidebarReservationList.css";
+
+.calendar-container {
+    margin-top: 7vh;
+    max-width: 1300px;
+    width: 100%;
+    height: 85vh;
+    overflow: hidden;
+}

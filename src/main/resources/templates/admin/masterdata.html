@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/member/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="/js/admin/masterdata.js"></script>
+    <script src="/js/admin/sidebar.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- 사이드바 2 -->
+        <div class="col-md-2">
+            <div th:replace="admin/admin-sidebar :: sidebar"></div>
+        </div>
+        <!-- 빈공간 1 -->
+        <div class="col-md-1"></div>
+        <!-- 메인컨텐츠 8 -->
+        <div class="content__wrapper col-md-8 mt-5">
+            <h2>기준 정보 관리</h2>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-group mt-4 w-50">
+                    <label for="viewCategory" class="sr-only">기준 정보 선택</label>
+                    <select id="viewCategory" class="form-control" onchange="ViewMasterData()">
+                        <option value="">카테고리를 선택하세요</option>
+                        <option value="materials">학습 종류</option>
+                        <option value="studyways">학업 구분</option>
+                        <option value="subjects">과목</option>
+                        <option value="exams">시험 유형</option>
+                    </select>
+                </div>
+                <a href="/admin/addMasterData" class="btn btn-info">등록</a>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th style="width: 20%;">코드</th>
+                    <th style="width: 20%;">이름</th>
+                    <th style="width: 40%;">비고</th>
+                    <th colspan="2">변경</th>
+                </tr>
+                </thead>
+                <tbody id="masterDataTableBody">
+                <!-- 기준정보 불러오는 곳 -->
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation" class="d-flex justify-content-center pagination-wrapper">
+                <ul class="pagination" id="pagination">
+                    <!-- 페이지네이션 불러오는 곳 -->
+                </ul>
+            </nav>
+        </div>
+        <!-- 빈 공간 1 -->
+        <div class="col-md-1"></div>
+    </div>
+</div>
+
+<!-- 수정 삭제 등록 모달 창 -->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">알림</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center" id="modalMessageBody">
+                <!-- 메시지가 표시될 부분 -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

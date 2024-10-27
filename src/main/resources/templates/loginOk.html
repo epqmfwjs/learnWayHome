@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- 이모티콘 -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script><!-- 풀캘린더 js -->
+    <link rel="stylesheet" type="text/css" href="/css/consult/sidebarConsultantList.css"><!-- 상담예약 css파일 -->
+    <link rel="stylesheet" type="text/css" href="/css/consult/sidebarReservationList.css"><!-- 예약리스트 css파일 -->
+    <link rel="stylesheet" type="text/css" href="/css/loginOk.css"><!-- loginOk css파일 -->
+</head>
+<body> 
+    <!-- SideBar 불러오는부분 -->
+    <div id="sidebar" th:replace="sidebar :: sidebar"></div>
+
+    <!-- 메인 컨텐츠 이 div 안을 body라고 생각하고 쓰면 됩니다 -->
+    <div class="main__content">
+        <div class="grid-container">
+            <div class="grid-item">
+                <!-- 공지사항 게시판 -->
+                <h3 class="mb-3 notice-title">N O T I C E</h3>
+				<ul class="list-group">
+					<a th:href="@{/notice/detail/{id}(id=${priNotice.noticeId})}" class="list-group-item list-group-item-action notice-priority" th:each="priNotice : ${priNotice}">
+			        <div class="d-flex justify-content-between align-items-center">
+			            <div>
+			                <span><img src="/img/notice/notice.png" alt="공지" style="width: 20px; height: 20px; margin-right: 5px; vertical-align:middle; "></span>
+			                <span th:text="${priNotice.noticeTitle}" style="font-weight: bold;"></span>
+			            </div>
+			            <div class="text-right" th:text="${#temporals.format(priNotice.createDate, 'yyyy.MM.dd')}"></div>
+			        </div>
+			    </a>
+				</ul>
+            </div>
+            <div class="grid-item">
+                <!-- 달력 -->
+                <div id="calendar"></div>
+            </div>           
+        </div>
+    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script><!-- 툴팁(tooltips)과 팝오버(popovers) 같은 UI 요소를 쉽게 관리 -->
+<script src="/js/consult/consultationReservation.js"></script><!-- 상담예약 javascript -->
+<script src="/js/consult/reservationList.js"></script><!-- 예약리스트 javascript -->
+<script src="/js/loginOk.js"></script><!-- loginOk javascript -->
+<script src="/js/icon.js"></script><!-- icon javascript -->
+</body>
+</html>

@@ -1,0 +1,73 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  PROJECT_NAME: aselcni
+  BUCKET_NAME: learnway-bucket
+  CODE_DEPLOY_APP_NAME: learnway
+  DEPLOYMENT_GROUP_NAME: learnway
+  EC2_USER: ubuntu
+  EC2_HOST: ${{ secrets.EC2_INSTANCE_IP }}
+  PROJECT_DIR: /home/ubuntu/aselcni
+  AWS_REGION: ap-northeast-2
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+    
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+
+      - name: Update db AWS key id
+        run: sed -i 's/<AWS_ACCESS_KEY_ID>/${{ secrets.AWS_ACCESS_KEY_ID }}/' src/main/resources/application.properties
+  
+      - name: Update db AWS key
+        run: sed -i 's/<AWS_SECRET__ACCESS_KEY>/${{ secrets.AWS_SECRET__ACCESS_KEY }}/' src/main/resources/application.properties
+      
+      - name: Update GPT API key
+        run: sed -i 's/<GPT_API_KEY>/${{ secrets.GPT_API_KEY }}/' src/main/resources/application.properties
+  
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET__ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Make zip file
+        run: zip -r ${{ github.sha }}.zip .
+        shell: bash
+
+      - name: Upload to S3
+        run: aws s3 cp ${{ github.sha }}.zip s3://${{ env.BUCKET_NAME }}/${{ env.PROJECT_NAME }}/${{ github.sha }}.zip --region ${{ env.AWS_REGION }}
+
+      - name: Deploy with CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
+            --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=${{ env.BUCKET_NAME }},bundleType=zip,key=${{ env.PROJECT_NAME }}/${{ github.sha }}.zip \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Clean up on failure
+        if: failure()
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "rm -rf ${{ env.PROJECT_DIR }}"

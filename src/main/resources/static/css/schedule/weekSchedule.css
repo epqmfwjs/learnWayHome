@@ -1,0 +1,385 @@
+#calendar{
+	height:790px;
+
+    }
+    
+.fc-event-main {
+    color: #2C3E50 !important;
+  }
+  
+.fc-timegrid-slot:last-child {
+  height: 30px !important; /* 또는 다른 슬롯과 동일한 높이 */
+  min-height: 30px !important;
+}
+   
+.fc-event-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
+
+.fc-event-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fc-event-studyway,
+.fc-event-achieveRate {
+  display: inline-block;
+}
+
+.fc-event-studyway {
+  font-size: 12px;	
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.fc-event-achieveRate {
+  font-size: 12px;
+  font-weight: bold;	
+  text-align: right;
+  margin-bottom: 5px;
+}
+
+.fc-event-subtitle {
+  font-size: 12px;
+  font-weight: bold;
+  margin: 2px 0px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, #F48FB1 var(--progress), #e0e0e0 var(--progress));
+  margin-bottom: 4px;
+  
+  /*
+  E68FAC
+  
+  */
+}
+
+.fc-col-header {
+  height: 40px !important; /* 원하는 높이로 조정 */
+}
+
+
+.fc-col-header-cell-cushion {
+  font-size: 18px;
+  margin-top:6px;
+}
+
+/* 일요일 날짜 빨간색 */
+.fc-day-sun {
+  color: #C62828;
+  text-decoration: none;
+}
+
+/* 토요일 날짜 파란색 */
+.fc-day-sat {
+  color: #1565C0;
+  text-decoration: none;
+}
+
+/* 달성율 0일 때 배경색 없애는 방법 */
+.fc-daygrid-event.no-achievement-event,
+.fc-daygrid-event.no-achievement-event .fc-event-main,
+.fc-daygrid-event.no-achievement-event .fc-event-title,
+.fc-daygrid-event.no-achievement-event .fc-event-time {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: transparent !important;
+}
+
+.fc-daygrid-event.no-achievement-event .fc-event-main {
+    display: none !important;
+}
+
+/* "월간"에서 일일상세모달창====================================*/
+.modal-content {
+  border-radius: 0.5rem;
+  margin: auto;
+}
+
+.modal-header {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+ .schedule-table tbody td:nth-child(4) {
+    text-align: right;
+    padding-right: 30px !important;
+  }
+  
+.modal-backdrop {
+    display: none;
+}
+
+.modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0 auto;
+}
+
+#monthlyScheduleModal .modal-dialog {
+    max-width: 500px !important;
+    width: 90% !important;
+}
+
+.fc-col-header-cell.fc-day-sun {
+    background-color: #ffebee;
+}
+
+.fc-col-header-cell.fc-day-sat {
+    background-color: #e3f2fd;
+}
+
+#monthlyScheduleModal.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+/* 전체 캘린더 테두리 스타일 */
+.fc-scrollgrid {
+    overflow: hidden;
+}
+
+.fc-col-header-cell.fc-day-sun {
+    background-color: #ffebee;
+}
+
+.fc-col-header-cell.fc-day-sat {
+    background-color: #e3f2fd;
+}
+
+.fc-col-header-cell {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+}
+
+/*주간요약*/
+/* 주간 요약 모달 스타일 */
+
+#weeklySummaryModal.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+.weekly-summary-modal .modal-content {
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.weekly-summary-modal .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+}
+
+.weekly-summary-modal .modal-title {
+  color: #495057;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.weekly-summary-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.weekly-summary-modal h4 {
+  color: #007bff;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.weekly-summary-modal ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.weekly-summary-modal li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.weekly-summary-modal .modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.weekly-summary-modal .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.weekly-summary-modal .btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+/* 스크롤바 스타일링 (선택사항) */
+.weekly-summary-modal .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.weekly-summary-modal .modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.weekly-summary-modal .modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.weekly-summary-modal .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+#weeklySummaryContent {
+    white-space: pre-wrap;
+  }
+
+  
+  /*로딩*/
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 57%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    text-align: center;
+    padding: 100px 200px; /* 패딩 값 조정 */
+    background-color: transparent;
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+  }
+
+  .loading-spinner {
+    font-size: 60px;
+    color: #FF8200;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-message {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #2c3e50;
+    font-weight: bold;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /*주간 일정 모달*/
+#updateModal.modal {
+   background-color: rgba(0, 0, 0, 0.5);
+ }
+ 
+#calendarModal.modal {
+   background-color: rgba(0, 0, 0, 0.5);
+ }
+  
+.modal-body {
+ overflow-y: auto;
+ max-height: 400px; /* 원하는 최대 높이로 조정 */
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.achieve-rate-input {
+    text-align: right;
+}
+
+.add-progress, .remove-progress {
+    width: 25px;
+    height: 30px;
+    padding: 0;
+    line-height: 1;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 모든 버튼에 대한 공통 스타일 -----------------btn */
+.fc-button-primary,
+.fc-dayGridMonth-button,
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary {
+    outline: none !important;
+    font-weight: bold !important;
+}
+
+/* 버튼 아웃라인 스타일 */
+.fc-button-primary {
+    color: var(--learnwayBlack) !important;
+    background-color: transparent !important;
+    border-color: var(--learnwayBlack) !important;
+}
+.fc-button-primary:hover {
+    color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+    font-weight: bold !important;
+}
+
+/* 월 버튼 스타일 */
+.fc-dayGridMonth-button:hover {
+    color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+    font-weight: bold !important;
+}
+
+.fc-timeGridWeek-button:hover {
+	color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+    font-weight: bold !important;
+}
+
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary {
+    color: #fff !important;
+    background-color: #343a40 !important;
+    border-color: var(--learnwayBlack) !important;
+    cursor: pointer !important;
+}
+
+/* Today 버튼 비활성화 스타일 (현재 날짜가 표시된 범위 내에 있을 때) */
+.fc .fc-toolbar .fc-today-button.fc-button.fc-button-primary:disabled {
+    color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+/* 포커스 시 스타일 제거 */
+.fc-button-primary:focus,
+.fc-dayGridMonth-button:focus,
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+

@@ -1,0 +1,284 @@
+@import "../globalstyle.css";
+
+body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0; /* 기본 마진 제거 */
+    font-family: Arial, sans-serif; /* 기본 폰트 설정 */
+}
+
+#main-content {
+    flex-grow: 1; /* 사이드바를 제외한 공간을 차지 */
+    display: flex;
+    flex-direction: column; /* 자식 요소를 세로로 정렬 */
+    justify-content: flex-start; /* 상단 정렬 */
+    align-items: center; /* 수평 중앙 정렬 */
+    margin-top: 1%;
+}
+
+#titleHead {
+    width: 100%;
+    max-width: 1200px; /* 제목의 최대 너비 설정 */
+    text-align: center;
+    font-size: 2em; /* 제목 글꼴 크기 */
+    margin-bottom: 40px; /* 제목과 내용 사이의 간격 */
+    border-bottom: 1px solid #ccc; /* 밑줄 스타일 */
+    padding-bottom: 20px; /* 밑줄 아래 여백 */
+}
+
+#calendarBox {
+    width: 100%;
+    max-width: 1300px; /* 최대 너비 설정 */
+    box-sizing: border-box; /* 패딩과 테두리 포함한 너비 계산 */
+    margin-top: 7vh;
+    height: 85vh;
+}
+
+#calendar {
+    height: 100%;
+    width: 100%;
+}
+
+.fc-timegrid-slot {
+    height: 76.8px !important;
+}
+
+/* 마지막 시간 슬롯의 높이를 다른 슬롯과 동일하게 설정 */
+.fc-timegrid-slot.fc-timegrid-slot-lane:only-child {
+    height: 60px !important; /* 다른 슬롯들과 동일한 높이로 설정 */
+}
+
+.fc-timegrid, .fc-header-toolbar {
+    width: 100%;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto;
+}
+
+/* 일요일 날짜 빨간색 */
+.fc-day-sun {
+    color: #C62828;
+    text-decoration: none;
+}
+
+/* 토요일 날짜 파란색 */
+.fc-day-sat {
+    color: #1565C0;
+    text-decoration: none;
+}
+
+.fc-event-main {
+    color: #2C3E50 !important;
+}
+
+/* 이벤트 제목을 굵게 표시 */
+.fc-event-title {
+    font-weight: bold !important;
+}
+
+/* 요일 헤더 스타일 */
+.fc-col-header-cell {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.fc-col-header-cell.fc-day-sun {
+    background-color: #ffebee;
+}
+
+.fc-col-header-cell.fc-day-sat {
+    background-color: #e3f2fd;
+}
+
+/* 시간 칸 스타일 */
+.fc-timegrid-slot.fc-timegrid-slot-label {
+    background-color: rgb(255, 255, 255);
+    border-right: 2px solid #ddd;
+    border-left: 2px solid #ddd;
+    border-top: 2px solid #ddd;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.fc-timegrid-slot-label-cushion {
+    color: #2C3E50;
+    font-weight: bold;
+    text-align: center;
+}
+
+.fc-timegrid-slot.fc-timegrid-slot-label:hover {
+    background-color: #e0e0e0;
+}
+
+/* 전체 캘린더 테두리 스타일 */
+.fc-scrollgrid {
+    border: 1px solid #666;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* 요일 칸 테두리 스타일 */
+.fc-col-header-cell {
+    border-left: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+.fc-col-header-cell:last-child {
+    border-right: 1px solid #ddd;
+}
+
+.fc-timegrid-slot:last-child {
+    border-bottom: 1px solid #ddd;
+}
+
+/* 이벤트 칸 테두리 스타일 */
+.fc-event {
+    border: 1px solid #ddd;
+}
+/* 여기서부터 캘린더 버튼 공통스타일 시작 */
+/* 모든 버튼에 대한 공통 스타일 */
+.fc-button-primary,
+.fc-dayGridMonth-button,
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary {
+    outline: none !important;
+}
+
+/* 버튼 아웃라인 스타일 */
+.fc-button-primary {
+    color: var(--learnwayBlack) !important;
+    background-color: transparent !important;
+    border-color: var(--learnwayBlack) !important;
+}
+
+.fc-button-primary:hover {
+    color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+}
+
+/* 월 버튼 스타일 */
+.fc-dayGridMonth-button {
+    color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+}
+
+.fc-dayGridMonth-button:hover {
+    color: var(--learnwayBlack) !important;
+    background-color: #fff !important;
+    border-color: var(--learnwayBlack) !important;
+}
+
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary {
+    color: #fff !important;
+    background-color: #343a40 !important;
+    border-color: var(--learnwayBlack) !important;
+    cursor: pointer !important;
+}
+
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary:hover {
+    color: #343a40 !important;
+    background-color: #fff !important;
+    border-color: #343a40 !important;
+}
+
+/* Today 버튼 비활성화 스타일 (현재 날짜가 표시된 범위 내에 있을 때) */
+.fc .fc-toolbar .fc-today-button.fc-button.fc-button-primary:disabled {
+    color: #fff !important;
+    background-color: var(--learnwayBlack) !important;
+    border-color: var(--learnwayBlack) !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+/* 포커스 시 스타일 제거 */
+.fc-button-primary:focus,
+.fc-dayGridMonth-button:focus,
+.fc .fc-toolbar button.fc-today-button.fc-button.fc-button-primary:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+/* 여기까지 캘린더 버튼 공통스타일 끝 */
+
+/* 모달 스타일 */
+#consultantInfoModal .modal-dialog {
+    max-width: 450px;
+}
+
+#consultantInfoModal .card-img-top {
+    width: 200px; 
+    height: 200px; 
+    display: block; /* 블록 요소로 설정하여 가운데 정렬을 위해 필요 */
+    margin: 0 auto; /* 가운데 정렬 */
+    margin-top: 20px; /* 위쪽 마진 설정 */
+    border-radius: 50%; /* 원형 테두리 설정 */
+}
+#consultantInfoModal .card-body {
+    text-align: center;
+}
+
+#consultantName {
+	margin-top: 20px;
+    font-size: 1.5em; 
+    font-weight: bold; 
+}
+
+#consultantSubject {
+	margin-top: 15px;
+    font-size: 1.2em; /* consultantName보다 작은 글씨 */
+    font-weight: bold; /* 기본 글씨 굵기 */
+}
+#consultantDescription {
+	margin-top: 30px;
+	font-weight: bolder; /* 기본 글씨 굵기 */
+}
+
+/*슬롯 안쪽 위치조정*/
+.event {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 15px;
+}
+/*자기예약아닐떄 디스에이블효과 주기*/
+.disabled-event {
+    opacity: 0.6;
+    pointer-events: none; /* 클릭을 비활성화 */
+}
+
+/* 미디어 쿼리: 작은 화면에 맞춘 스타일 */
+@media (max-width: 768px) {
+    #calendarBox {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    #calendar {
+        height: auto; /* 높이를 자동으로 설정 */
+    }
+
+    .fc-timegrid, .fc-header-toolbar {
+        width: 100%;
+    }
+
+    .fc-timegrid-slot {
+        height: auto !important;
+    }
+}
+
+/* 미디어 쿼리: 큰 화면에 맞춘 스타일 */
+@media (min-width: 1300px) {
+    #calendarBox {
+        width: 1300px; /* 원하는 가로 크기로 설정 */
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .fc-timegrid, .fc-header-toolbar {
+        width: 1300px !important; /* 원하는 가로 크기로 수정 */
+    }
+}

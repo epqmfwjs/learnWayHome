@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글 작성</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/study/studyAdd.css" type="text/css"/>
+</head>
+<body>
+    <div th:replace="sidebar :: sidebar"></div>
+
+    <div class="container content-wrapper">
+        <div id="form-container">
+            <form action="/studyadd" method="post" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-col-left">
+                        <div class="left-content">
+                            <div class="title-section">
+                                <div class="form-group">
+                                <label></label>
+                                    <input type="text" id="title" name="title" class="form-control" placeholder="제목">
+                                </div>
+                            </div>
+                            
+                            <div class="content-section">
+                                <div class="form-group">
+                                    <textarea id="content" name="content" class="form-control" rows="15" placeholder="내용"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="hashtag-section">
+                                <div class="form-group">
+                                    <label for="hashtags">해시태그</label>
+                                    <input type="text" id="hashtags" class="form-control" placeholder="Enter로 추가해보세요.">
+                                    <div id="hashtags-container" class="mt-1"></div>
+                                    <input type="hidden" id="tag" name="tag">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-col-right">
+                        <div class="date-section">
+                            <div class="date-input">
+                                <label for="startdate">시작일:</label>
+                                <input type="date" id="startdatetest" name="startdatetest" class="form-control" >
+                            </div>
+                            <div class="date-input">
+                                <label for="enddate">종료일:</label>
+                                <input type="date" id="enddatetest" name="enddatetest" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="roomname">채팅방 생성:</label>
+                            <button type="button" class="btn btn-outline-info my-2 my-sm-0" onclick="showPopup(event);">생성하기</button>
+                        </div>
+                        
+                        <input type="hidden" name="roomname" id="roomname">
+                        <input type="hidden" name="name" id="name">
+                        <input type="hidden" name="roomId" id="roomId">
+                        
+                        <div class="form-group">
+                            <label>문제출제:</label>
+                            <div class="form-check">
+                                <input type="checkbox" id="problem" name="problem" value="0" class="form-check-input" onclick="toggleProblemDetails(event)">
+                                <label class="form-check-label" for="problem">직접출제</label>
+                            </div>
+                        </div>
+                        
+                        <div id="problem-details">
+                            
+                            <div id="additional-fields">
+                               <div class="form-group form-inline ">
+				    <label for="subject" >과목 : </label> 
+				    <select id="subject" name="subject" class="form-control form-control-sm ml-1">
+				        <option value="과목">과목</option>
+				        <option value="국어">국어</option>
+				        <option value="영어">영어</option>
+				        <option value="수학">수학</option>
+				        <option value="사탐">사탐</option>
+				        <option value="과탐">과탐</option>
+				        <option value="기타">기타</option>
+				    </select>
+				    <label for="level" class="ml-3">난이도:</label>
+				    <select id="level" name="level" class="form-control form-control-sm ml-1">
+				        <option value="난이도">난이도</option>
+				        <option value="상">상</option>
+				        <option value="중">중</option>
+				        <option value="하">하</option>
+				    </select>
+				</div>
+				
+				<div class="form-group">
+                                    <input type="text" id="correct" name="correct" class="form-control mt-1" placeholder="정답을 입력해주세요.">
+                                </div>
+                            </div>
+                            
+                             <div class="form-group">
+                                <label for="imgpath">문제 이미지 업로드 : </label>
+                                <input type="file" id="imgpath" name="imgpath" class="form-control-file" multiple accept="image/*" onchange="previewImages(event)">
+                                <div id="image-preview"></div>
+                            </div>
+                        </div>
+                        <div class="submit-button">
+                            <button type="submit" class="btn btn-outline-info my-2 my-sm-0 mr-2" >작성</button>
+                            <button type="button" id="cancelBtn" name="cancelBtn" class="btn btn-outline-danger my-2 my-sm-0">취소</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="/js/consult/consultationReservation.js"></script>
+    <script src="/js/consult/reservationList.js"></script>
+    <script>
+    let lastCheckedRadio = null;
+
+    function showPopup(event) {
+        event.preventDefault();
+        
+        // 팝업 창의 크기 설정
+        var popupWidth = 350;
+        var popupHeight = 250;
+        
+        // 화면의 중앙 좌표 계산
+        var left = (window.screen.width / 2) - (popupWidth / 2);
+        var top = (window.screen.height / 2) - (popupHeight / 2);
+        
+        // 팝업 창 열기
+        var popup = window.open('/createRoom', 'popup', 
+            `width=${popupWidth},height=${popupHeight},left=${left},top=${top}`);
+        
+        popup.onunload = function() {
+            if (popup.closed) {
+                alert("채팅방 생성 완료");
+                var roomname = popup.document.getElementById('roomname').value;
+                document.getElementById('roomname').value = roomname;
+            }
+        }
+    }
+
+    function previewImages(event) {
+        var preview = document.getElementById('image-preview');
+        preview.innerHTML = '';
+
+        var files = event.target.files;
+
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var img = document.createElement('img');
+                img.src = e.target.result;
+                img.onclick = function() {
+                    openModal(this.src);
+                };
+                preview.appendChild(img);
+            }
+
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('additional-fields').style.display = 'block';
+    }
+
+    function openModal(src) {
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById("modalImage");
+
+        // 이미지 크기 설정
+        modalImg.style.maxWidth = "50vw";  
+        modalImg.style.maxHeight = "80vh"; 
+        modalImg.src = src;
+
+        // 모달을 화면 중앙에 표시
+        modal.style.display = "flex";
+        modal.style.alignItems = "center";
+        modal.style.justifyContent = "center";
+    }
+
+function slideDown(element, duration = 500) {
+    element.style.display = 'block';
+    const height = element.scrollHeight;
+    element.style.overflow = 'hidden';
+    element.style.maxHeight = '0';
+    element.style.transition = `max-height ${duration}ms ease-out`;
+
+    requestAnimationFrame(() => {
+        element.style.maxHeight = `${height}px`;
+    });
+ 
+    setTimeout(() => {
+        element.style.maxHeight = '';
+        element.style.overflow = '';
+        element.style.transition = '';
+    }, duration);
+}
+
+function slideUp(element, duration = 500) {
+    const height = element.scrollHeight;
+    element.style.overflow = 'hidden';
+    element.style.maxHeight = `${height}px`;
+    element.style.transition = `max-height ${duration}ms ease-out`;
+
+    requestAnimationFrame(() => {
+        element.style.maxHeight = '0';
+    });
+
+    setTimeout(() => {
+        element.style.display = 'none';
+        element.style.overflow = '';
+        element.style.transition = '';
+    }, duration);
+}
+
+function toggleProblemDetails(event) {
+    const details = document.getElementById('problem-details');
+    const radioButton = event.target;
+
+    if (radioButton.checked) {
+        slideDown(details);
+        lastCheckedRadio = radioButton;
+    } else {
+        slideUp(details);
+        radioButton.checked = false;
+        lastCheckedRadio = null;
+    }
+}
+
+
+window.onload = function() {
+    var today = new Date().toISOString().split('T')[0];
+    var startdate = document.getElementById("startdatetest");
+    var enddate = document.getElementById("enddatetest");
+
+    startdate.setAttribute('min', today);
+    enddate.setAttribute('min', today);
+
+    /* 모달함수 */
+    var modal = document.getElementById('imageModal');
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    startdate.addEventListener('change', function() {
+        var selectedDate = new Date(startdate.value);
+        var endDate = new Date(selectedDate);
+        endDate.setDate(selectedDate.getDate() + 7);
+
+        var formattedEndDate = endDate.toISOString().split('T')[0];
+
+        enddate.setAttribute('min', selectedDate.toISOString().split('T')[0]);
+        enddate.value = formattedEndDate;
+
+        if (enddate.value < selectedDate.toISOString().split('T')[0]) {
+            enddate.value = selectedDate.toISOString().split('T')[0];
+        }
+    });
+
+        /* 해시태그 복붙 */
+      const hashtagsInput = document.getElementById("hashtags");
+	  const hashtagsContainer = document.getElementById("hashtags-container");
+	  const hiddenHashtagsInput = document.getElementById("tag");
+
+	let hashtags = [];
+
+function addHashtag(tag) {
+    tag = tag.replace(/[\[\],]/g, '').trim(); // 쉼표(,)와 대괄호([]) 제거
+    if (tag && !hashtags.includes("#" + tag)) { // 중복 체크를 추가함
+        const span = document.createElement("span");
+        span.innerText = "#" + tag;
+        span.classList.add("hashtag");
+
+        const removeButton = document.createElement("button");
+        removeButton.innerText = "x";
+        removeButton.classList.add("remove-button");
+        removeButton.addEventListener("click", () => {
+            hashtagsContainer.removeChild(span);
+            hashtags = hashtags.filter((hashtag) => hashtag !== "#" + tag);
+            hiddenHashtagsInput.value = hashtags.join(",");
+        });
+
+        span.appendChild(removeButton);
+        hashtagsContainer.appendChild(span);
+        hashtags.push("#" + tag);
+        hiddenHashtagsInput.value = hashtags.join(",");
+    } else {
+        console.log("이미 추가된 태그입니다."); // 이미 추가된 경우 콘솔에 로그 출력
+    }
+}
+
+hashtagsInput.addEventListener("keydown", (event) => {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        const tags = hashtagsInput.value.split(','); // 쉼표(,)로 분할
+        tags.forEach(tag => {
+            if (tag.trim()) {
+                addHashtag(tag.trim());
+            }
+        });
+        hashtagsInput.value = "";
+    }
+});
+        document.getElementById('problem').addEventListener('click', toggleProblemDetails);
+        
+        document.querySelectorAll('input[type="text"], input[type="date"]').forEach(input => {
+            input.addEventListener("keydown", (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                }
+            });
+        });
+    }
+    
+document.getElementById("cancelBtn").addEventListener("click", function() {
+    if (confirm("글 작성을 취소하시겠습니까?")) {
+        location.href = "/studylist";
+    }
+});
+</script>
+<script src="/js/icon.js"></script>
+</body>
+</html>

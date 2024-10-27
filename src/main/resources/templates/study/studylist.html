@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study List</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+ 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/css/study/studyList.css" type="text/css"/>
+    <script src="/js/study/studyList.js"></script>
+</head>
+<body>
+    <!-- SideBar 불러오는부분 -->
+    <div th:replace="sidebar :: sidebar"></div>
+    
+    <div class="main__content">
+        <div class="container content-wrapper">
+                <div class="search-container">
+                    <form action="/studylist/search" method="post" class="search-form">
+                        <input type="text" id="title" name="title" class="search-input" placeholder="글제목 검색">
+                        <input type="hidden" id="hiddenDuplicates" name="detailSearch">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <button type="button" id="advancedSearchButton" class="btn btn-link" data-toggle="modal" data-target="#exampleModal">
+                         <i class="fas fa-filter"></i>
+                    </button>
+                    <button onclick="location.href='/studyadd'" class="btn btn-outline-info my-2 my-sm-0">
+                        글쓰기
+                    </button>
+                </div>
+
+                
+                <div class="view-toggle">
+                    <i class="fas fa-th-list active" id="listViewIcon"></i>
+                    <i class="fas fa-th-large" id="cardViewIcon"></i>
+                </div>
+                    <!-- 모달 부분은 그대로 유지 -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">상세 검색</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- 모달 내용 -->
+                                <div class="form-group">
+                                    <label for="searchtag">해시태그</label>
+                                    <input type="text" class="form-control" id="searchtag" placeholder="검색할 태그내용을 입력하세요.">
+                                    <div class="hashtag-container mt-2"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="startdate">시작일</label>
+                                    <input type="date" class="form-control" id="startdate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="roomCheck">채팅방 여부</label>
+                                    <input type="checkbox" id="roomCheck" value="0" onchange="updateCheckboxValue(this)">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-info" id="applyButton">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="listView" class="list-group">
+              <div th:each="study : ${list.content}" class="list-group-item list-group-item-action"
+         th:onclick="|window.location.href='/study/detail/' + ${study.postid} + '?page=' + ${list.number}|">
+
+                        
+                    <div class="d-flex w-100 justify-content-between">
+                        <h3 class="mb-3 study-title" th:text="${study.title != null and study.title != ''} ? ${study.title} : '제목없음'">Title</h3>
+                        <small th:text="${study.createdate}" class="text-muted">Start Date</small>
+                    </div>
+                    <p class="mb-1 mt-4">
+                        <span class="author" th:each="member : ${study.member}" th:text="${member.memberName}">작성자</span>
+                        <span th:each="tag : ${study.tags}" class="badge badge-light mr-1" th:text="${tag.tag}">Tag</span>
+                    </p>
+                    <div class="study-info">
+                <small>
+                    <span class="ml-2" th:if="${study.chatroomCount > 0}">
+                        <i class="fas fa-comments"></i>
+                    </span>
+                    <span class="ml-2" th:if="${study.chatroomCount == 0}">
+                        <i class="far fa-comments"></i>
+                    </span>
+                    <span>&#128172; <span th:text="${study.repliesCount}">0</span></span>
+                </small>
+            </div>
+                </div>
+            </div>
+
+
+   <div id="cardView" class="row" style="display: none;">
+    <div th:each="study, iterStat : ${list}" th:if="${iterStat.index < 6}" class="col-md-4 mb-4">
+        <div class="card h-100" th:onclick="window.location.href='/study/detail/' + [[${study.postid}]]">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${study.title != null and study.title != ''} ? ${study.title} : '제목없음'">Title</h5>
+
+                            <p class="card-text">
+                                <small class="text-muted" th:text="${study.createdate}">Start Date</small>
+                            </p>
+                            <p class="card-text">
+                                <span class="author" th:each="member : ${study.member}" th:text="${member.memberName}">작성자</span>
+                            </p>
+                            <p class="card-text">
+                                <span th:each="tag : ${study.tags}" class="badge badge-light mr-1" th:text="${tag.tag}">Tag</span>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="study-info">
+                        <small>
+                    <span class="ml-2" th:if="${study.chatroomCount > 0}">
+                        <i class="fas fa-comments"></i>
+                    </span>
+                    <span class="ml-2" th:if="${study.chatroomCount == 0}">
+                        <i class="far fa-comments"></i>
+                    </span>
+                    <span>&#128172; <span th:text="${study.repliesCount}">0</span></span>
+                </small>
+                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+    <div class="footer-container">
+        <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/studylist(page=${list.number - 1})}" tabindex="-1">&laquo;</a>
+            </li>
+
+            <th:block th:if="${list.totalPages > 0}">
+                <th:block th:with="start=${T(java.lang.Math).max(1, list.number-2)}, 
+                                    end=${T(java.lang.Math).min(list.totalPages, list.number+3)}">
+                    <li class="page-item" th:each="num : ${#numbers.sequence(start, end)}" 
+                        th:classappend="${num == list.number + 1} ? 'active'">
+                        <a class="page-link" th:href="@{/studylist(page=${num - 1})}" th:text="${num}"></a>
+                    </li>
+                </th:block>
+            </th:block>
+            
+            <th:block th:if="${list.totalPages == 0}">
+                <li class="page-item active">
+                    <a class="page-link" href="#">1</a>
+                </li>
+            </th:block>
+
+            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/studylist(page=${list.number + 1})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+        </div>
+        
+        </div>
+    </div>
+
+	</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="/js/consult/consultationReservation.js"></script>
+    <script src="/js/icon.js"></script>
+</html>

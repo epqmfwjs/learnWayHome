@@ -1,0 +1,751 @@
+ <!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LearnWay</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #sidebar {
+            width: 300px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            position: fixed;
+        }
+
+        #sidebar .consultantIMG {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 10px 15px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        #sidebar .sidebar-item {
+            padding: 10px 15px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* ----------------메모장----------------- */
+        
+        #sidebarMemo {
+		    width: 250px;
+		    background-color: #343a40;
+		    color: white;
+		    padding-top: 20px;
+		    display: flex;
+		    flex-direction: column;
+		    height: 100vh;
+		}
+		
+		#sidebarMemo .sidebar-header {
+		    padding: 10px 15px;
+		    font-size: 1.2em;
+		}
+        
+        #sidebarMemo .sidebar-itemDropdown {
+		    padding: 10px 15px;
+		    font-size: 1.2em;
+		    cursor: pointer;
+		}
+		
+		#sidebarMemo .sidebar-itemDropdown:hover {
+		    background-color: #495057;
+		}
+        
+        #sidebarMemo .submenuDropdown {
+		    display: none;
+		    padding-left: 25px;
+		}
+		
+		#sidebarMemo .submenuDropdown a {
+		    color: #adb5bd;
+		    text-decoration: none;
+		    display: block;
+		    padding: 5px 0;
+		}
+		
+		#sidebarMemo .submenuDropdown a:hover {
+		    color: white;
+		}
+
+		/* ----------------메모장 끝----------------- */
+		
+        #sidebar #logout {
+            margin-top: auto;
+            margin-bottom: 20px;
+
+        }
+        
+        #sidebar #editProfile {
+            margin-top: auto;
+            margin-bottom: 20px;
+		}
+		
+		/* 버튼 그룹을 수평으로 정렬 */
+		#sidebar .button-group {
+		    display: flex;
+		    flex-direction: row;
+		    justify-content: space-around; /* 버튼들 사이의 여백을 균등하게 설정 */
+		    align-items: center; /* 세로 정렬을 가운데로 조정 */
+		    margin-top: 20px; /* 위쪽 여백 추가 */
+		    margin-bottom: 20px; /* 아래쪽 여백 추가 */
+		}
+		
+		/* 각 버튼의 스타일 수정 */
+		#editProfile, #logout {
+		    width: auto; /* 버튼 너비 자동 설정 */
+		    min-width: 120px; /* 최소 너비 설정 */
+		    padding: 10px 20px; /* 버튼 내부 여백 설정 */
+		    margin: 0 10px; /* 버튼 사이의 가로 여백 설정 */
+		    font-weight: 500; /* 폰트 두껍게 설정 */
+		    font-size: 14px; /* 폰트 크기 설정 */
+		}
+		/* a 태그 관련 CSS */
+		a{
+			text-decoration: none;
+		}
+		a:hover{
+		  text-decoration: none;
+		  color:inherit;
+		  cursor: pointer;
+		}
+		
+		.content {
+		    margin-left: 250px;
+		    padding: 20px;
+		    flex: 1;
+		    margin-top: 30px; /* 여기에 원하는 여백 값을 추가 */
+		}
+
+        .room-list {
+            margin-top: 20px;
+        }
+
+        .disabled-link {
+            pointer-events: none;
+            color: gray;
+        }
+
+        .toast-container {
+            position: fixed;
+            background-color: bisque;
+            top: 20px;
+            right: 20px;
+            z-index: 1060;
+        }
+        
+        #memoEditContent {
+	        width: 450px; /* 원하는 너비로 설정 */
+	        height: 300px; /* 원하는 높이로 설정 */
+	    }
+	    
+	    
+		.memo-grid-container {
+		    display: grid;
+		    grid-template-columns: repeat(3, 1fr); /* 3개의 열을 가진 그리드 레이아웃 설정 */
+		    gap: 20px; /* 그리드 아이템 사이의 간격 설정 */
+		    padding: 20px; /* 내부 여백 설정 */
+		}
+		
+		.memo-item {
+		    position: relative; /* 상대적 위치 지정 */
+		    width: calc(100% / 3 - 40px); /* 모달 창 너비에 맞게 3개씩 배열될 너비 설정 */
+		    min-width: 200px; /* 최소 너비 설정 (선택사항) */
+		    height: 150px; /* 네모 모양의 고정된 세로 크기 설정 */
+		    background-color: #ffffff; /* 배경색 지정 */
+		    padding: 20px; /* 내부 여백 설정 */
+		    border: 1px solid #e0e0e0; /* 테두리 설정 */
+		    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+		    border-radius: 5px; /* 테두리 둥글기 설정 */
+		    overflow: hidden; /* 내용이 넘칠 경우 숨기기 */
+		    text-overflow: ellipsis; /* 텍스트가 넘칠 경우 생략 부호(...)로 표시 */
+		    transition: all 0.3s ease; /* 호버 효과에 애니메이션을 추가할 경우 사용 */
+		}
+		
+		.memo-icon {
+		    position: absolute; /* 절대적 위치 지정 */
+		    top: 10px; /* 카드의 상단에서 10px 떨어진 위치 */
+		    left: 10px; /* 카드의 왼쪽에서 10px 떨어진 위치 */
+		    font-size: 1.5rem; /* 이모지 크기 설정 */
+		    pointer-events: none; /* 이모지가 클릭되지 않도록 설정 */
+		}
+		
+		.memo-item:hover {
+		    background-color: #f0f0f0; /* 호버 시 배경색 변경 */
+		    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 효과 변경 */
+		}
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+		<div class="sidebar-header">
+            <img src="/img/mainLogo.png" style="width:200px; height:auto;">
+        </div>
+        <hr>
+        <!--<img src="" alt="프로필 사진" class="consultantIMG">-->
+        <img th:src="@{${#authentication.principal.image}}" alt="User Image" class="consultantIMG" onerror="this.onerror=null;this.src='/img/member/member-default.png';">
+        <div class="sidebar-header">
+        </div>
+        <div class="sidebar-item">
+            <span id="subject">담당 분야</span>
+        </div>
+        
+        <div class="sidebar-item">
+            <span id="description">상담사 소개</span>
+        </div>
+        <hr>
+        <div id="sidebarMemo">
+	    <div class="sidebar-itemDropdown">
+            📝 메모장
+	        <div class="submenuDropdown">
+                <a href="#" class="MemoAdd-link">메모등록</a>
+                <a href="#" class="MemoList-link">메모리스트</a>
+            </div>
+	    </div>
+	
+        </div>
+        <div class="button-group">
+	        <a th:href="@{/consult/update/{id}(id=${counselor_id})}" id="editProfile" class="btn btn-outline-success">정보수정</a>
+	        <form method="post" action="/logout">
+                <button type="submit" id="logout" name="logout" class="btn btn-outline-danger" >로그아웃</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="content">
+        <input type="hidden" th:value="${counselor_id}" id="counselor_id">
+        <input type="hidden" th:value="${connectId}" id="connectId">
+        <div class="container">
+            <h1><span id="titleName"></span></h1>
+            <br/>
+            <h2>ReservationList</h2>
+            <br/>
+            <table class="table table-striped room-list">
+                <thead>
+                    <tr>
+                        <th>ℹ️ 예약 ID</th>
+                        <th>👤 예약자</th>
+                        <th>⏰ 예약 시간</th>
+                        <th>📋 신청자 정보</th>
+                        <th>💻 화상 상담</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationList">
+                    <!-- 예약 리스트 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 유저 정보 모달 -->
+        <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userInfoModalLabel">유저 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 유저 정보 디테일 -->
+                        <div id="userInfoContent"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-success" id="printButton">프린트</button>
+                      <!--  <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+		<!-- 알림기능 -->
+        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+            <div style="position: absolute; top: 0; right: 0;">
+                <div id="toastContainer" class="toast-container"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 알림 소리 -->
+  	<audio id="notification-sound" src="/audio/notification.mp3" preload="auto"></audio>
+    
+    <!-- 메모등록 모달 -->
+    <div class="modal fade" id="memoAddModal" tabindex="-1" role="dialog" aria-labelledby="memoAddModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="memoAddModalLabel" style="font-weight: bold;" >📝 메모 등록</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="memoAddForm">
+                        <div class="form-group">
+                            <label for="memoTitle" style="font-weight: bold;" >📌 제목</label>
+                            <input type="text" class="form-control" id="memoTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="memoContent" style="font-weight: bold;" >🖊 내용</label>
+                            <textarea class="form-control" id="memoContent" name="content" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success float-right insertBtn">저장</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- 메모 리스트 모달 -->
+	<div class="modal fade" id="memoListModal" tabindex="-1" role="dialog" aria-labelledby="memoListModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-lg" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="memoListModalLabel" style="font-weight: bold;" >📝 메모 리스트</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <div class="memo-grid-container" id="memoListContainer">
+	                    <!-- 여기에 메모 리스트 -->
+	                </div>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">닫기</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 메모 디테일 및 수정 폼을 포함한 모달 -->
+	<div id="memoDetailModal" class="modal fade" tabindex="-1" role="dialog">
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">📝 메모내용 및 수정</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <!-- 메모 디테일 내용 -->
+	                <div id="memoDetailContent">
+	                    <!-- 클릭된 메모의 디테일 내용이 여기에 들어감 -->
+	                </div>
+	
+	                <!-- 메모 수정 폼 -->
+	                <form id="memoEditForm">
+	                    <div class="form-group">
+	                        <label for="memoEditTitle" style="font-weight: bold;" >📌 제목</label>
+	                        <input type="text" class="form-control" id="memoEditTitle" required>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="memoEditContent" style="font-weight: bold;">🖊 내용</label>
+	                        <textarea class="form-control" id="memoEditContent" rows="3" required></textarea>
+	                    </div>
+					    <div class="text-right">
+					        <button type="submit" class="btn btn-outline-success" id="updateMemoBtn">수정</button>
+					        <button type="button" class="btn btn-outline-danger" id="deleteMemoBtn">삭제</button>
+					    </div>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+<script>
+        $(document).ready(function() {
+            // 메모등록 버튼 클릭 시 메모등록 모달 띄우기
+            $('.MemoAdd-link').click(function(e) {
+                e.preventDefault();
+                $('#memoAddModal').modal('show');
+            });
+
+            // 메모등록 폼 제출 시 처리
+            $('#memoAddForm').submit(function(e) {
+                e.preventDefault();
+                var memoData = {
+                    memoTitle: $('#memoTitle').val(),
+                    memoContents: $('#memoContent').val(),
+                };
+
+                $.ajax({
+                    url: '/api/memos',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(memoData),
+                    success: function(response) {
+                        alert('메모가 저장되었습니다.');
+                        $('#memoAddModal').modal('hide');
+                        $('#memoAddForm')[0].reset(); // 폼 리셋
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('메모 저장에 실패했습니다. 오류: ', error);
+                        alert('메모 저장에 실패했습니다.');
+                    }
+                });
+            });
+            
+			// 메모리스트 클릭 함수
+			$('.MemoList-link').click(function(e) {
+			    e.preventDefault();
+			    
+			    $.ajax({
+			        url: '/api/memos',
+			        type: 'GET',
+			        dataType: 'json',
+			        success: function(data) {
+			            var memoList = $('#memoListContainer');
+			            memoList.empty(); // 기존 메모 리스트 초기화
+			            
+			            // 각 메모를 반복해서 표시
+			            data.forEach(function(memo) {
+			                var formattedDateTime = new Date(memo.timestamp).toLocaleString(); // 메모 작성 일시 포맷팅
+			                
+			                var memoItem = `
+			                    <div class="card mb-3 memo-item" data-memo-id="${memo.memoId}">
+			                        <div class="card-body">
+										<span class="memo-icon">🖊</span> <!-- 🖊 이모지 -->
+			                            <h5 class="card-title">${memo.memoTitle}</h5>
+			                            <p class="card-text">${memo.memoContents}</p>
+			                        </div>
+			                    </div>
+			                `;
+			                
+			                memoList.append(memoItem); // 메모 리스트에 추가
+			            });
+			            
+			            $('#memoListModal').modal('show'); // 메모 리스트 모달 표시
+			        },
+			        error: function(xhr, status, error) {
+			            console.error('메모 리스트를 가져오는 데 실패했습니다. 오류:', error);
+			            alert('메모 리스트를 가져오는 데 실패했습니다.');
+			        }
+			    });
+			});
+			
+		    // 메모 리스트에서 메모 항목 클릭 시 처리
+		    $(document).on('click', '.memo-item', function() {
+		        var memoId = $(this).data('memo-id');
+		
+		        // 해당 메모의 디테일(수정폼) 정보 가져오기
+		        $.ajax({
+		            url: '/api/memos/' + memoId,
+		            type: 'GET',
+		            dataType: 'json',
+		            success: function(memo) {
+		                if (Array.isArray(memo)) {
+		                    memo = memo[0];
+		                }
+		
+		                // 수정 폼에 기존 메모 내용 채우기
+		                $('#memoEditTitle').val(memo.memoTitle);
+		                $('#memoEditContent').val(memo.memoContents);
+		
+		                // 삭제 버튼 클릭 시 처리
+		                $('#deleteMemoBtn').off('click').on('click', function() {
+		                    if (confirm('정말 이 메모를 삭제하시겠습니까?')) {
+		                        deleteMemo(memoId);
+		                    }
+		                });
+		
+		                // 수정 버튼 클릭 시 처리
+		                $('#updateMemoBtn').off('click').on('click', function() {
+		                    var updatedTitle = $('#memoEditTitle').val();
+		                    var updatedContent = $('#memoEditContent').val();
+		
+		                    // 메모 업데이트
+		                    $.ajax({
+		                        url: '/api/memos/' + memoId,
+		                        type: 'PUT',
+		                        contentType: 'application/json',
+		                        data: JSON.stringify({
+		                            memoTitle: updatedTitle,
+		                            memoContents: updatedContent
+		                        }),
+		                        success: function(response) {
+		                            alert('메모가 성공적으로 업데이트되었습니다.');
+		                            $('#memoDetailModal').modal('hide');
+		                        },
+		                        error: function(xhr, status, error) {
+		                            console.error('메모 업데이트에 실패했습니다. 오류:', error);
+		                            alert('메모 업데이트에 실패했습니다.');
+		                        }
+		                    });
+		                });
+		
+		                // 모달 열기
+		                $('#memoDetailModal').modal('show');
+		            },
+		            error: function(xhr, status, error) {
+		                console.error('메모 디테일을 가져오는 데 실패했습니다. 오류:', error);
+		                alert('메모 디테일을 가져오는 데 실패했습니다.');
+		            }
+		        });
+		    });
+		
+		    // 메모 삭제 요청 처리
+		    function deleteMemo(memoId) {
+		        $.ajax({
+		            url: '/api/memos/' + memoId,
+		            type: 'DELETE',
+		            success: function(response) {
+		                alert('메모가 삭제되었습니다.');
+		                $('#memoDetailModal').modal('hide');
+		                $('.memo-item[data-memo-id="' + memoId + '"]').remove();
+		            },
+		            error: function(xhr, status, error) {
+		                console.error('메모 삭제에 실패했습니다. 오류: ', error);
+		                alert('메모 삭제에 실패했습니다.');
+		            }
+		        });
+		    }
+
+
+            $('.sidebar-itemDropdown').click(function() {
+                $(this).find('.submenuDropdown').slideToggle(300);
+            });
+
+            var counselor_id = document.getElementById("counselor_id").value;
+
+            var eventSource = new EventSource('/sse/subscribe/' + counselor_id);
+            eventSource.addEventListener('notification', function(event) {
+                console.log("알림 들어옴: ", event.data);
+                showToast('새 알림', event.data);
+                
+            // 알림 소리 재생
+        	document.getElementById('notification-sound').play();
+        	
+            });
+
+            eventSource.onerror = function(event) {
+                console.error('SSE 연결 오류', event);
+            };
+
+            function showToast(title, message) {
+                var toastId = 'toast-' + new Date().getTime();
+                var toastHtml =
+                    `<div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+                        <div class="toast-header">
+                            <strong class="mr-auto">${title}</strong>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="toast-body">
+                            ${message}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-sm btn-outline-success mt-2 float-right confirm-btn">확인</button>
+                                </div>
+                            </div>                  
+                        </div>
+                    </div>`;
+
+                $('#toastContainer').append(toastHtml);
+                var $toast = $('#' + toastId);
+                $toast.toast('show');
+
+                $toast.find('.confirm-btn').click(function() {
+                    $toast.toast('hide');
+                    location.reload();
+                });
+            }
+
+            function formatDateTime(dateTimeString) {
+                const date = new Date(dateTimeString);
+                const year = date.getFullYear();
+                const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                const day = ('0' + date.getDate()).slice(-2);
+                let hours = date.getHours();
+                const minutes = ('0' + date.getMinutes()).slice(-2);
+
+                const period = hours < 12 ? '오전' : '오후';
+                hours = hours % 12 || 12;
+                const formattedTime = `${year}/${month}/${day} ${period} ${hours}:${minutes}`;
+
+                return formattedTime;
+            }
+
+            function fetchReservations() {
+                $.ajax({
+                    url: '/api/reservations?consultant=' + counselor_id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        var reservationList = $('#reservationList');
+                        reservationList.empty();
+                        
+                        data.sort(function(a, b) {
+                            return new Date(a.bookingStart) - new Date(b.bookingStart);
+                        });
+
+                        const currentTime = new Date();// 현재 시간
+
+                        data.forEach(function(reservation) {
+							// 예약 시간을 포맷팅
+                            var bookingStartTime = new Date(reservation.bookingStart);
+                            var bookingEndTime = new Date(reservation.bookingEnd);
+                            var formattedStartTime = formatDateTime(reservation.bookingStart);
+                            var formattedEndTime = formatDateTime(reservation.bookingEnd);
+                            var formattedTime = `${formattedStartTime} ~ ${formattedEndTime}`;
+                            var userName = reservation.member.memberName;
+                            var roomId = reservation.counselor.id;
+                            var userId = reservation.member.id;
+                            var consultantId = reservation.counselor.consultantId;
+			
+							 // 현재 시간이 예약 시간 내에 있는지 확인
+                            var isWithinBookingTime = currentTime >= bookingStartTime && currentTime <= bookingEndTime;
+                            var linkClass = isWithinBookingTime ? '' : 'disabled-link';
+                            //var linkClass = isWithinBookingTime ? 'disabled-link' : '';
+                            var linkText = isWithinBookingTime ? '💻 입장하기' : '🚫 입장불가';
+
+                            var row = `
+                                <tr>
+                                    <td>${reservation.member.memberId}</td>
+                                    <td>${userName}</td>
+                                    <td>${formattedTime}</td>
+                                    <td><a href="#" class="user-info-link" data-user-id="${userId}">📎 정보확인</a></td>
+                                    <td><a href="#" class="${linkClass} enter-room-link" data-room-id="${roomId}" data-consultant-id="${consultantId}" >${linkText}</a></td>
+                                </tr>
+                            `;
+                            reservationList.append(row);
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('예약 데이터를 가져오는 데 실패했습니다. 오류: ', error);
+                    }
+                });
+            }
+
+			// 입장하기 링크 클릭 시의 이벤트 핸들러
+            $(document).on('click', 'a.enter-room-link', function(e) {
+                e.preventDefault();
+                var roomId = $(this).data('room-id');
+                var myKey = $(this).data('consultant-id');
+                console.log("myKey : "+myKey);
+                // WebSocket 연결 설정
+                //var socket = new SockJS('http://localhost:8095/signaling/video');
+                //var socket = new SockJS('https://192.168.219.105:443/signaling/video');
+				var socket = new SockJS('https://43.202.58.56:443/signaling/video');//aws 테스트
+				var stompClient = Stomp.over(socket);
+				
+				stompClient.connect({}, function (frame) {
+				    console.log('Connected: ' + frame);
+				    stompClient.subscribe('/topic/messages', function (message) {
+				        console.log(message.body);
+				    });
+				}, function (error) {
+				    console.error('Error: ' + error);
+				});
+                
+
+                
+                stompClient.debug = null;
+				
+				// 서버와의 WebSocket 연결
+                stompClient.connect({}, function () {
+                    console.log('WebSocket 연결 성공');
+					
+					// 서버로 roomId 전송
+                    stompClient.send(`/app/join/room/${roomId}/${myKey}`, {}, JSON.stringify({}));
+
+					// 서버로부터의 응답 처리
+                    stompClient.subscribe(`/topic/join/room/${roomId}/${myKey}`, function (response) {
+                        var message = response.body.trim();
+                        console.log('서버 응답:', message);
+
+						//서버단에서 방인원수체크 로직 돌아가기 (현재 수정필요한부분 방을 꺼버렸을때 인원수가 맵에 계속 남아있는현상)
+                        if (message === 'successfully') {
+                            console.log("방 들어가기 요청 성공");
+                            //window.open(`http://localhost:8095/video?roomId=${roomId}`, '_blank');
+                            //window.open(`https://192.168.219.105:443/consult/video?roomId=${roomId}`, '_blank');
+                            window.open(`https://43.202.58.56:443/consult/video?roomId=${roomId}`, '_blank');//aws 테스트
+                        } else if (message === 'full') {
+                            console.log("방 들어가기 요청 실패");
+                            alert('이미 방이 가득 찼습니다.');
+                        } else {
+                            console.log("서버 응답 형식 오류:", message);
+                        }
+						// WebSocket 연결 종료
+                        stompClient.disconnect();
+                    });
+                }, function (error) {
+                    console.error('WebSocket 연결 실패:', error);
+                });
+            });
+            
+			// 유저정보 확인하기 링크 클릭 시의 이벤트 핸들러
+            $(document).on('click', 'a.user-info-link', function(e) {
+                e.preventDefault();
+                var userId = $(this).data('user-id');
+				
+				//유저 정보가져오기위한 요청(왠지 다른사람과 중복될수있는부분이기에 점검해봐야할듯? )
+                $.ajax({
+                    url: `/api/users/${userId}`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(user) {
+                        var userInfoContent = `
+                            <p><img src="${user.memberImg}" alt="User Image" style="max-width: 100%; height: auto;"></p>
+                            <p>이름: ${user.memberName}</p>
+                            <p>나이:  ${user.memberAge} 세</p>
+                            <p>성별: ${user.memberGender}</p>
+                            <p>연락처: ${user.memberPhone}</p>
+                            <p>Email: ${user.memberEmail}</p>
+                            <p>주소: ${user.memberAllAddress}</p>
+                            <p>${user.memberSchool} 학교 ${user.memberGrade} 학년</p>
+                            <p>상담요청내용: ${user.requestContents}</p>
+                        `;
+                        $('#userInfoContent').html(userInfoContent);
+                        
+                        // 모달 띄우기
+                        $('#userInfoModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('유저 정보를 가져오는 데 실패했습니다. 오류: ', error);
+                    }
+                });
+            });
+            
+            // 정보 수정 버튼 클릭 시
+		    $('#editProfile').click(function() {
+		        window.location.href = '#'; // 수정 페이지의 URL로 변경
+		    });
+			
+			//프린트 함수
+            $('#printButton').click(function() {
+                var printContent = $('#userInfoContent').html();
+                var originalContent = $('body').html();
+
+                $('body').html(printContent);
+                window.print();
+                $('body').html(originalContent);
+                location.reload();
+            });
+            
+			// 초기 예약 데이터 가져오기 함수 호출
+            fetchReservations();
+            setInterval(fetchReservations, 300000); // 5분마다 예약 리스트 갱신
+        });
+    </script>
+    <script src="/js/consult/sidebarConsultantInfo.js"></script><!-- 사이드바 상담사 정보조회 javascript -->
+</body>
+</html>

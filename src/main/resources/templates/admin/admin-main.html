@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="/css/globalstyle.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="d-flex flex-column min-vh-100">
+    <div class="container d-flex flex-column justify-content-center align-items-center my-auto">
+        <img src="/img/mainLogo.png" alt="Logo" class="mb-3">
+        <h4 class="text-danger mb-4">ADMIN</h4>
+        <div class="list-group mt-3 mb-4 w-50 text-center">
+            <a href="/admin/masterdata" class="list-group-item list-group-item-action">기준 정보 관리</a>
+            <a href="/member/members" class="list-group-item list-group-item-action">회원 정보 조회</a>
+            <a href="/notice/noticeList" class="list-group-item list-group-item-action">공지 사항 등록</a>
+            <a href="/admin/consult/join" class="list-group-item list-group-item-action">컨설턴트 등록</a>
+        </div>
+        <a href="/" class="text-secondary mt-3">일반 유저 페이지로 돌아가기</a>
+    </div>
+</div>
+<!-- 상담사 등록 완료 모달 -->
+<div class="modal fade" id="consultantRegisteredModal" tabindex="-1" role="dialog" aria-labelledby="consultantRegisteredModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultantRegisteredModalLabel">상담사 등록 완료</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p>상담사 로그인이 필요하시다면,</p>
+                <p>로그아웃 후 로그인 페이지에서 </p>
+                <p><b>Consult Login</b>을 진행해 주세요.</p>
+                <p>관리자 페이지에 남아 있길 원하신다면 <b>계속</b>을 클릭해주세요.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">계속</button>
+                <a href="/logout" class="btn btn-outline-danger">로그아웃</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 모달 표시를 위한 스크립트 -->
+<script>
+    $(document).ready(function() {
+        // URL 파라미터에서 등록 성공 여부를 확인하여 모달 표시
+        var urlParams = new URLSearchParams(window.location.search);
+        var registered = urlParams.get('registered');
+        if (registered === 'true') {
+            $('#consultantRegisteredModal').modal('show');
+        }
+    });
+</script>
+</body>
+</html>

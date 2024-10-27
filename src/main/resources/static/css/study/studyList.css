@@ -1,0 +1,266 @@
+@import url("../globalstyle.css");
+@import url("../consult/sidebarConsultantList.css");
+@import url("../consult/sidebarReservationList.css");
+
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-input {
+    width: 300px;
+    height : 40px;
+    padding: 8px 30px 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    font-size: 16px;
+}
+
+.search-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+
+
+#advancedSearchButton {
+    background: none;
+    border: none;
+    color: #000000;
+    font-size: 0.9em;
+    margin: 0 10px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+#advancedSearchButton i {
+    margin-left: 5px; /* 아이콘과 텍스트 사이의 간격 조절 */
+}
+
+#advancedSearchButton:hover {
+    color: #c0c0c0; /* 호버 시 텍스트 색상 변경 */
+}
+
+#advancedSearchButton:focus {
+    outline: none; /* 포커스 시 외곽선 제거 */
+}
+.search-button i {
+    color: #666;
+    font-size: 16px;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+.write-button {
+	  background-color: transparent; /* 배경색 투명 */
+    color: #28a745; /* 글씨 색상 초록색 */
+    border: 1px solid #28a745; /* 테두리 초록색 */
+}
+
+.write-button:hover {
+    
+     transition: all 0.3s ease-in-out;
+    padding: 6px 12px;
+}
+
+.hashtag-container {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 300px;
+    min-height: 50px;
+}
+
+.hashtag {
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.remove-button {
+    background: none;
+    border: none;
+    color: red;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.content-wrapper {
+    max-width: 1300px;
+    height: 85vh;
+    margin-top: 7vh;
+}
+
+.list-group-item {
+    transition: background-color 0.3s;
+    padding: 10px; /* 리스트 아이템의 공간을 넓힘 */
+    position: relative;
+    border-left: none;
+    border-right: none;
+}
+
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.badge-light {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.list-group-item .study-title {
+    font-size: 1.1rem; 
+    color: #343a40;
+    font-weight: bolder;
+}
+
+.list-group-item .author {
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.list-group-item small {
+    color: #6c757d;
+}
+
+.study-info {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    text-align: right;
+    font-size: 14px;
+}
+
+.main__content {
+    position: relative; 
+    min-height: 100vh; 
+    padding-bottom: 0px; 
+}
+
+.footer-container {
+    position: absolute; /* 절대 위치 설정 */
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); /* 가운데 정렬을 위해 왼쪽으로 50% 이동 */
+    width: 100%; /* 너비 100% */
+    text-align: center;
+    padding: 50px;
+}
+
+.pagination {
+    margin-top: 0; /* 불필요한 여백 제거 */
+}
+
+.page-item.active .page-link {
+    color: #fff;
+    background-color: #17a2b8;
+}
+.card {
+    transition: transform 0.3s;
+    cursor: pointer;
+   /*  height: calc(100vh - 250px);  */
+   min-height : 280px;
+   min-width : 350px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1.5rem;
+}
+
+.card-title {
+    margin-bottom: 1rem;
+    /* font-weight: bold; */
+    font-size: 1.4rem;
+}
+
+.card-text {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 0.4em 0.6em;
+}
+
+.card-footer {
+    background-color: rgba(0,0,0,.03);
+    border-top: 1px solid rgba(0,0,0,.125);
+    padding: 1rem;
+    margin-top: auto;
+}
+
+.card-footer .study-info {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.card-footer .study-info .ml-2 {
+    margin-left: 15px;
+}
+
+.card-footer .study-info .ml-2 i {
+    vertical-align: middle;
+    margin-right: 5px;
+    font-size: 1.0rem;
+}
+
+
+
+.view-toggle {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.view-toggle i {
+    font-size: 1.5em;
+    margin-right: 10px;
+    cursor: pointer;
+    color: #6c757d;
+    transition: color 0.3s ease, transform 0.3s ease; 
+}
+
+.view-toggle i.active {
+    color: #17a2b8; 
+}
+
+.view-toggle i:hover {
+    transform: scale(1.1);
+}
+
+
+

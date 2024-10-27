@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/js/member/consultJoin.js"></script>
+    <script src="/js/admin/sidebar.js"></script>
+    <link rel="stylesheet" href="/css/member/admin.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- 사이드바 -->
+        <div class="col-md-2 d-flex flex-column vh-100">
+            <div th:replace="admin/admin-sidebar :: sidebar"></div>
+        </div>
+        <!-- 그리드 1만큼 빈공간-->
+        <div class="col-md-1"></div>
+        <!-- 메인 컨텐츠 -->
+        <div class="main__content col-md-8 vh-100 overflow-auto">
+            <div class="mt-5">
+                <h2>컨설턴트 등록</h2>
+                <hr>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form th:action="@{/admin/consult/join}" method="post" th:object="${consultantJoinDTO}"
+                              enctype="multipart/form-data" onsubmit="validateForm(event)">
+                            <input type="hidden" id="isUsernameChecked" value="false">
+
+                            <div class="text-center mb-4">
+                                <img id="imagePreview" src="/img/member/member-default.png" alt="Image Preview"
+                                     class="img-preview mb-3" />
+                                <input type="file" class="form-control-file" id="imageUpload" name="image"
+                                       accept="image/*" onchange="validateImage(this)" style="display: none;">
+                                <button type="button" class="btn btn-outline-info"
+                                        onclick="document.getElementById('imageUpload').click();">이미지 선택</button>
+                            </div>
+                            <div class="form-group">
+                                <label for="username">ID</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           th:field="*{username}" placeholder="영문,숫자 4자~20자 이하로 입력해 주세요."
+                                           onchange="resetUsernameCheck()">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-info"
+                                                onclick="checkUsername()">중복 체크</button>
+                                    </div>
+                                </div>
+                                <small id="idCheckResult" class="text-danger"></small> <!-- ID 중복 검사 결과 메시지 -->
+                                <small id="usernameError" class="text-danger" th:if="${#fields.hasErrors('username')}"
+                                       th:errors="*{username}"></small> <!-- 유효성 검사 메시지 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="password">비밀번호</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}"
+                                       placeholder="영문, 숫자, 특수문자를 모두 사용해 6자 이상 입력해 주세요.">
+                                <small id="passwordCheckResult" class="text-danger"></small>
+                                <small id="passwordError" class="text-danger" th:if="${#fields.hasErrors('password')}"
+                                       th:errors="*{password}"></small> <!-- 유효성 검사 메시지 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">비밀번호 확인</label>
+                                <input type="password" class="form-control" id="confirmPassword"
+                                       th:field="*{confirmPassword}">
+                                <small id="confirmPasswordError" class="text-danger"
+                                       th:if="${#fields.hasErrors('confirmPassword')}"
+                                       th:errors="*{confirmPassword}"></small> <!-- 유효성 검사 메시지 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="name">이름</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}">
+                                <small id="nameError" class="text-danger" th:if="${#fields.hasErrors('name')}"
+                                       th:errors="*{name}"></small> <!-- 유효성 검사 메시지 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">담당 과목</label>
+                                <input type="text" class="form-control" id="subject" th:field="*{subject}">
+                                <small id="subjectError" class="text-danger" th:if="${#fields.hasErrors('subject')}"
+                                       th:errors="*{subject}"></small> <!-- 유효성 검사 메시지 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="description">설명</label>
+                                <textarea class="form-control" id="description" th:field="*{description}"></textarea>
+                                <small id="descriptionError" class="text-danger"
+                                       th:if="${#fields.hasErrors('description')}"
+                                       th:errors="*{description}"></small> <!-- 유효성 검사 메시지 -->
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-outline-success btn-block">등록</button>
+                            </div>
+                            <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
+                            <!-- 서버측 오류 메시지 표시 -->
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+</body>
+</html>

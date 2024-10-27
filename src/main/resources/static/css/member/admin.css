@@ -1,0 +1,54 @@
+/* 사이드바 클릭 시 호버 유지 */
+.sidebar-menu .list-group-item.active {
+    background-color: #f8f9fa; /* 활성 메뉴 배경색 */
+    color: #343a40; /* 활성 메뉴 텍스트 색상 */
+    font-weight: bold; /* 활성 메뉴 텍스트 굵기 */
+}
+/* 모달 제목 글씨체 */
+.modal-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* 컨설턴트 조인 CSS */
+/* 패딩 값 0으로 필요시 */
+/* 이미지 미리보기 CSS */
+.img-preview {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+.no-padding {
+    padding: 0 !important;
+}
+/* 스크롤 바 보이지 않게 */
+.main__content::-webkit-scrollbar {
+    display: none;
+}
+.main__content {
+    -ms-overflow-style: none;
+    /* IE, Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* 페이지네이션 있는 페이지 */
+.content__wrapper {
+    min-height: calc(100vh - 100px); /* 페이지 높이에서 헤더와 패딩을 제외한 높이 설정 */
+    position: relative;
+}
+.pagination-wrapper {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+/* 게시글 일정 길이 이상 ... 표시 */
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px; /* 필요한 최대 너비 설정 */
+}

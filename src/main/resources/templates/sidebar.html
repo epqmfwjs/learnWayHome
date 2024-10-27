@@ -1,0 +1,99 @@
+<div th:fragment="sidebar">
+    <div id="sidebar">
+        <a href="/" class="sidebar-header d-flex justify-content-center">
+            <img src="/img/mainLogo.png" alt="이미지 설명" style="max-width: 200px; height: auto;">
+        </a>
+        <hr></br>
+       <div class="sidebar-member-info">
+            <div class="d-flex align-items-center d-flex justify-content-center">
+                <img th:src="@{${#authentication.principal.image}}" alt="User Image" class="img-fluid rounded-circle" style="width:50px; height:50px" onerror="this.onerror=null;this.src='/img/member/member-default.png';">
+                <span class="ml-4" th:text="${#authentication.principal.name}"></span>
+            </div>
+            </br>
+            <div class="text-center mt-2">
+                <a href="/member/update" class="text-white mr-3"><i class="fas fa-cog"></i> 정보수정</a>
+                <a href="/logout" class="text-white">로그아웃</a>
+            </div>
+            <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                <div class="text-center mt-2">
+                    <a href="/admin/main" class="text-danger"><i class="fas fa-user-shield"></i> 관리자 Page</a>
+                </div>
+            </div>
+       </div>
+        <hr>
+        <div class="sidebar-items-container">
+            <div class="sidebar-item" data-value="/schedule/weekSchedule" onclick="window.location.href=this.getAttribute('data-value')">
+                <a href="/schedule/weekSchedule"><i class="fas fa-chevron-right arrow-icon"></i> &nbsp;일정관리</a>
+            </div>
+            <div class="sidebar-item" onclick="toggleSubMenu(this)" data-value="/exam">
+                <i class="fas fa-chevron-right arrow-icon"></i> &nbsp;성적관리
+                <div class="submenu">
+                    <a href="/exam/list/1">성적입력</a>
+                    <a href="/score/">성적비교</a>
+                </div>
+            </div>
+            <div class="sidebar-item" onclick="toggleSubMenu(this)" data-value="/study">
+                <i class="fas fa-chevron-right arrow-icon"></i> &nbsp;커뮤니티
+                <div class="submenu">
+                    <a href="/studylist">커뮤니티</a>
+                    <a href="/learnway/chat">채팅리스트</a>
+                </div>
+            </div>
+            <div class="sidebar-item" onclick="toggleSubMenu(this)" data-value="/reservationBoard">
+                <i class="fas fa-chevron-right arrow-icon"></i> &nbsp;상담하기
+                <div class="submenu">
+                    <a href="#" class="consult-link">상담예약</a>
+                    <a href="#" class="reservationList-link">예약리스트</a>
+                </div>
+            </div>
+            <div class="sidebar-item" data-value="/notice/noticeList" onclick="window.location.href=this.getAttribute('data-value')">
+                <a href="/notice/noticeList"><i class="fas fa-chevron-right arrow-icon"></i> &nbsp;공지사항</a>
+            </div>
+        </div>
+        </div>
+		<!-- 상담사리스트 모달 구조 -->
+		<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+		    <div class="modal-dialog" role="document">
+		        <div class="modal-content">
+		            <span class="close"><span>&times;</span></span>
+		            <div class="cardBox" id="consultantList">
+		                <!-- 상담사 리스트 출력부분 -->
+		            </div>
+		            <div id="pagination" class="pagination-container"></div>
+		        </div>
+		    </div>
+		</div>
+        <!-- 예약리스트 모달 구조 -->
+        <div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content" id ="reservationModalContesnt">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reservationModalLabel">화상상담 예약리스트</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h2 class="reservationModalH2" style="font-weight: bold;">ReservationList</h2>
+                        <table class="table table-striped room-list">
+                            <thead>
+                                <tr>
+                                    <th style="font-weight: bold;">상담유형</th>
+                                    <th style="font-weight: bold;">상담사</th>
+                                    <th style="font-weight: bold;">예약시간</th>
+                                    <th style="font-weight: bold;">화상상담</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationList">
+                                <!-- 예약 리스트 출력부분 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-outline-danger" data-dismiss="modal">닫기</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

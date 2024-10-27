@@ -1,0 +1,10 @@
+/* 이미지 프리뷰 스타일 */
+.img-preview {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+}

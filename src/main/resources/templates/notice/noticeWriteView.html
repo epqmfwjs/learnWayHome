@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnWay</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><!-- jquery 는 항상 위에둘것 -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script><!-- 부트스트랩 js -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"><!-- 부트스트랩 css -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/noticeWriteView.css}"><!-- // css파일 -->
+</head>
+<body>
+<!-- SideBar 불러오는부분 -->
+<div th:replace="sidebar :: sidebar"></div>
+
+<!-- 메인 컨텐츠 이 div 안을 body라고 생각하고 쓰면 됩니다 -->
+<div class="main__content">
+  <!-- 이곳에 작업합시다 -->
+  <div class="container">
+    <form action="/notice/write" method="post" enctype="multipart/form-data">    
+		<div class="form-group row align-items-center">
+          <div class="col-2">
+              <select class="form-control" id="category" name="category" required>
+                  <option value="" selected>카테고리 선택</option>
+                  <option value="점검">점검</option>
+                  <option value="서비스">서비스</option>
+              </select>
+          </div>
+          <div class="col-4 d-flex align-items-end">
+              <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="priority" name="priority" >
+                  <label class="form-check-label" for="priority">공지</label>
+              </div>
+          </div>
+      </div>
+      <div class="form-group">
+          <input type="text" class="form-control" id="noticeTitle" name="noticeTitle" placeholder="제목" required>
+      </div>
+      <div class="form-group">
+        <textarea class="form-control" id="noticeContent" name="noticeContent" rows="17" placeholder="내용" required></textarea>
+      </div>
+      <div class="text-right">
+        <button type="submit" class="btn btn-outline-info">글쓰기</button>
+      </div>
+      <div class="form-group">
+        <input type="file" class="form-control-file" name="comFile" multiple accept="image/*" onchange="readURL(this)">
+      </div>
+      <div id="previewContainer" class="form-group" style="display: none;">
+		  <img id="preview" src="" alt="이미지 미리보기" class="img-fluid">
+		</div>
+    </form>
+  </div>
+</div>
+
+<script>
+// 이미지 미리보기 기능을 위한 JavaScript 코드
+function readURL(input) {
+	  var preview = document.getElementById('preview');
+	  var previewContainer = document.getElementById('previewContainer');
+
+	  if (input.files && input.files[0]) {
+	    var reader = new FileReader();
+	    
+	    reader.onload = function(e) {
+	      preview.src = e.target.result;
+	      previewContainer.style.display = 'block';
+	    }
+	    
+	    reader.readAsDataURL(input.files[0]);
+	  } else {
+	    preview.src = "";
+	    previewContainer.style.display = 'none';
+	  }
+}
+
+//파일 입력 요소에 이벤트 리스너 추가
+document.querySelector('input[name="comFile"]').addEventListener('change', function() {
+  readURL(this);
+});
+</script>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script><!-- 사이드바 상담관련 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script><!-- 툴팁(tooltips)과 팝오버(popovers) 같은 UI 요소를 쉽게 관리 -->
+<script src="/js/consult/consultationReservation.js"></script><!-- 상담예약 javascript -->
+<script src="/js/consult/reservationList.js"></script><!-- 예약리스트 javascript -->
+<script src="/js/notice/noticeWriteView.js"></script><!-- 스케쥴러 javascript -->
+</html>

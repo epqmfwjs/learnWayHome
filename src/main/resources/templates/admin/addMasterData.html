@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWay</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/member/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div th:replace="admin/admin-sidebar :: sidebar"></div>
+        </div>
+        <div class="col-md-1"></div><!-- 빈공간 그리드-->
+        <div class="col-md-8 mt-5">
+            <h2>기준 정보 추가</h2>
+            <hr>
+            <form th:action="@{/admin/addMasterData}" method="post" th:object="${masterDataDTO}">
+                <div class="form-group mt-5">
+                    <label for="category">기준 정보 선택:</label>
+                    <select id="category" name="category" class="form-control" th:field="*{category}">
+                        <option value="subject">Subject</option>
+                        <option value="studyway">StudyWay</option>
+                        <option value="material">Material</option>
+                        <option value="exam">ExamType</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="code">코드:</label>
+                    <input type="text" id="code" name="code" class="form-control" th:field="*{code}">
+                    <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="name">이름:</label>
+                    <input type="text" id="name" name="name" class="form-control" th:field="*{name}">
+                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+                </div>
+                <div class="form-group">
+                    <label for="note">비고:</label>
+                    <input type="text" id="note" name="note" class="form-control" th:field="*{note}">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-outline-primary">추가</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1"></div><!-- 빈공간 그리드-->
+    </div>
+</div>
+<!-- 중복 오류 모달 -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true" th:if="${errorMessage}">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">오류</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p th:text="${errorMessage}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 중복된 코드일 경우 에러 메세지 확인 후 모달 show
+    $(document).ready(function() {
+        if (window.location.search.includes('error=true')) {
+            $('#errorModal').modal('show');
+        }
+        // 폼 제출 시 에러 메시지 초기화
+        $('form').on('submit', function() {
+            $('#errorModal').modal('hide');
+        });
+    });
+</script>
+</body>
+</html>
