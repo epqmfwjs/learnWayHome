@@ -58,8 +58,7 @@ dependencies {
     implementation 'org.mockito:mockito-core:4.2.0'
 
 	// .env관련
-	implementation 'io.github.cdimascio:dotenv-java:6.2.2'
-    
+	implementation 'io.github.cdimascio:dotenv-java:6.2.0'
 }
 
 bootJar {
