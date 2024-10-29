@@ -14,10 +14,10 @@ public class Appconfig implements WebMvcConfigurer {
 		.addResourceLocations("file:///learway/img/studyself/");
 	}
 
-    @Value("${KEY_STORE_PASSWORD}")
+/*    @Value("${KEY_STORE_PASSWORD}")
     private String keyStorePassword;
 
     @Value("${KEY_STORE_ALIAS}")
-    private String keyStoreAlias;
+    private String keyStoreAlias;*/
 
 }
