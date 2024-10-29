@@ -241,6 +241,7 @@ public class MemberService {
 
             // 신규 이미지 파일 경로로 설정
             imagePath = fileName;
+            System.out.println("멤버수정 이미지 경로는? :" + imagePath);
         }
 
 
