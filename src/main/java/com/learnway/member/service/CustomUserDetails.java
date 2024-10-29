@@ -32,9 +32,12 @@ public class CustomUserDetails implements UserDetails {
     // 이미지
     public String getImage() {
         String memberImage = member.getMemberImage();
+        System.out.println("Member Image URL: " + memberImage); // 이미지추적
         if (memberImage != null && !memberImage.isEmpty() && !memberImage.equals("/img/member/member-default.png")) {
+            System.out.println("세션 이미지 저장 멤버아이디는 널이 아니였다!");
             return memberImage;
         } else {
+            System.out.println("세션 이미지 저장 멤버아이디는 널이 였다!");
             return "/img/member/member-default.png"; // 기본 이미지 경로로 설정
         }
     }
