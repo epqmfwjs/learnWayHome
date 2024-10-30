@@ -159,7 +159,7 @@
 
             document.querySelector('#startStreamBtn').addEventListener('click', async () => {
                 const startStreamBtn = document.querySelector('#startStreamBtn');
-                stompClient.send(/app/call/key, {}, {});
+                stompClient.send(`/app/call/key`, {}, {});
                 setTimeout(() => {
                     otherKeyList.forEach((key) => {
                         if (!pcListMap.has(key)) {
