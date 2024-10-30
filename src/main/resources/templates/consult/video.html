@@ -222,7 +222,9 @@
                 { urls: 'stun:stun2.l.google.com:19302' },
                 { urls: 'stun:stun3.l.google.com:19302' },
                 { // TURN 서버 설정
-                urls: 'turn:user1:password1@gogolckh.ddns.net:3478', // TURN 서버 주소
+                urls: 'turn:gogolckh.ddns.net:3478', // TURN 서버 주소
+                username: 'user1', // TURN 서버 사용자 이름
+                credential: 'password1' // TURN 서버 비밀번호
                 }
             ]
         });
