@@ -283,16 +283,16 @@
     };
 
     let onTrack = (event, otherKey) => {
-        console.log('onTrack event from key:', otherKey, event);
-        if (document.getElementById(${otherKey}) === null) {
-            const video = document.createElement('video');
-            video.autoplay = true;
-            video.controls = true;
-            video.id = otherKey;
-            video.srcObject = event.streams[0]; // 스트림을 비디오에 연결
-            document.getElementById('remoteStreamDiv').appendChild(video);
-        }
-    };
+    console.log('onTrack event from key:', otherKey, event);
+    if (document.getElementById(otherKey) === null) { // 여기 수정
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.controls = true;
+        video.id = otherKey;
+        video.srcObject = event.streams[0]; // 스트림을 비디오에 연결
+        document.getElementById('remoteStreamDiv').appendChild(video);
+    }
+};
 
     window.onload = async function() {
         const urlParams = new URLSearchParams(window.location.search);
