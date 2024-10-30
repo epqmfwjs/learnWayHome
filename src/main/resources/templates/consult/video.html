@@ -112,7 +112,7 @@
         stompClient.connect({}, function () {
             console.log('WebRTC 연결 성공');
 
-            stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomId}`, candidate => {
+            stompClient.subscribe(/topic/peer/iceCandidate/${myKey}/${roomId}, candidate => {
                 const key = JSON.parse(candidate.body).key;
                 const message = JSON.parse(candidate.body).body;
                 console.log('Received ICE candidate from:', key, message);
@@ -121,7 +121,7 @@
                 }
             });
 
-            stompClient.subscribe(`/topic/peer/offer/${myKey}/${roomId}`, offer => {
+            stompClient.subscribe(/topic/peer/offer/${myKey}/${roomId}, offer => {
                 const key = JSON.parse(offer.body).key;
                 const message = JSON.parse(offer.body).body;
                 console.log('Received offer from:', key, message);
@@ -133,7 +133,7 @@
                 sendAnswer(pc, key);
             });
 
-            stompClient.subscribe(`/topic/peer/answer/${myKey}/${roomId}`, answer => {
+            stompClient.subscribe(/topic/peer/answer/${myKey}/${roomId}, answer => {
                 const key = JSON.parse(answer.body).key;
                 const message = JSON.parse(answer.body).body;
                 console.log('Received answer from:', key, message);
@@ -142,24 +142,24 @@
                 }
             });
 
-            stompClient.subscribe(`/topic/call/key`, () => {
+            stompClient.subscribe(/topic/call/key, () => {
                 console.log('Requesting keys...');
-                stompClient.send(`/app/send/key`, {}, JSON.stringify(myKey));
+                stompClient.send(/app/send/key, {}, JSON.stringify(myKey));
             });
 
-            stompClient.subscribe(`/topic/send/key`, message => {
+            stompClient.subscribe(/topic/send/key, message => {
                 const key = JSON.parse(message.body);
                 console.log('Received key:', key);
                 if (myKey !== key && !otherKeyList.includes(key)) {
                     otherKeyList.push(key);
                     console.log('Added key to otherKeyList:', key);
-                    showNotification(`상대방이 입장했습니다: ${key}`);
+                    showNotification(상대방이 입장했습니다: ${key});
                 }
             });
 
             document.querySelector('#startStreamBtn').addEventListener('click', async () => {
                 const startStreamBtn = document.querySelector('#startStreamBtn');
-                stompClient.send(`/app/call/key`, {}, {});
+                stompClient.send(/app/call/key, {}, {});
                 setTimeout(() => {
                     otherKeyList.forEach((key) => {
                         if (!pcListMap.has(key)) {
@@ -187,7 +187,7 @@
 
         // 서버로 방 나가기 요청 보내기
         if (stompClient && roomId && myKey) {
-            stompClient.send(`/app/leave/room/${roomId}/${myKey}`, {}, {});
+            stompClient.send(/app/leave/room/${roomId}/${myKey}, {}, {});
         }
 
         stompClient.disconnect();
@@ -214,16 +214,15 @@
         }, 5000);
     };
 
-       const createPeerConnection = (otherKey) => {
+    const createPeerConnection = (otherKey) => {
         const pc = new RTCPeerConnection({
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' }, // Google STUN 서버
                 { urls: 'stun:stun1.l.google.com:19302' },
                 { urls: 'stun:stun2.l.google.com:19302' },
-                {
-                    urls: 'turn:user1:password1@gogolckh.ddns.net:3478', // TURN 서버 주소
-                    username: 'user1', // TURN 서버 사용자 이름
-                    credential: 'password1' // TURN 서버 비밀번호
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { // TURN 서버 설정
+                urls: 'turn:user1:password1@gogolckh.ddns.net:3478', // TURN 서버 주소
                 }
             ]
         });
@@ -250,7 +249,7 @@
     let onIceCandidate = (event, otherKey) => {
         if (event.candidate) {
             console.log('ICE candidate');
-            stompClient.send(`/app/peer/iceCandidate/${otherKey}/${roomId}`, {}, JSON.stringify({
+            stompClient.send(/app/peer/iceCandidate/${otherKey}/${roomId}, {}, JSON.stringify({
                 key: myKey,
                 body: event.candidate
             }));
@@ -260,7 +259,7 @@
     let sendOffer = (pc, otherKey) => {
         pc.createOffer().then(offer => {
             setLocalAndSendMessage(pc, offer);
-            stompClient.send(`/app/peer/offer/${otherKey}/${roomId}`, {}, JSON.stringify({
+            stompClient.send(/app/peer/offer/${otherKey}/${roomId}, {}, JSON.stringify({
                 key: myKey,
                 body: offer
             }));
@@ -271,7 +270,7 @@
     let sendAnswer = (pc, otherKey) => {
         pc.createAnswer().then(answer => {
             setLocalAndSendMessage(pc, answer);
-            stompClient.send(`/app/peer/answer/${otherKey}/${roomId}`, {}, JSON.stringify({
+            stompClient.send(/app/peer/answer/${otherKey}/${roomId}, {}, JSON.stringify({
                 key: myKey,
                 body: answer
             }));
@@ -285,7 +284,7 @@
 
     let onTrack = (event, otherKey) => {
         console.log('onTrack event from key:', otherKey, event);
-        if (document.getElementById(`${otherKey}`) === null) {
+        if (document.getElementById(${otherKey}) === null) {
             const video = document.createElement('video');
             video.autoplay = true;
             video.controls = true;
@@ -330,6 +329,5 @@
         toggleMicBtn.textContent = audioEnabled ? '마이크On' : '마이크Off';
     });
 </script>
-
 </body>
 </html>
