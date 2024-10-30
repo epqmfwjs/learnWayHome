@@ -144,7 +144,7 @@
 
             stompClient.subscribe(`/topic/call/key`, () => {
                 console.log('Requesting keys...');
-                stompClient.send(/app/send/key, {}, JSON.stringify(myKey));
+                stompClient.send(`/app/send/key`, {}, JSON.stringify(myKey));
             });
 
             stompClient.subscribe(`/topic/send/key`, message => {
@@ -153,7 +153,7 @@
                 if (myKey !== key && !otherKeyList.includes(key)) {
                     otherKeyList.push(key);
                     console.log('Added key to otherKeyList:', key);
-                    showNotification(상대방이 입장했습니다: ${key});
+                    showNotification(`상대방이 입장했습니다: ${key}`);
                 }
             });
 
