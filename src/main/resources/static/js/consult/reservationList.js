@@ -83,7 +83,7 @@ function fetchReservations() {
         // WebSocket 연결 설정
         //var socket = new SockJS('/signaling/video');
         //var socket = new SockJS('https://192.168.219.105:443/signaling/video');
-        var socket = new SockJS('https://43.202.58.56:443/signaling/video');//aws 테스트
+        var socket = new SockJS('https://gogolckh.ddns.net/signaling/video');//aws 테스트
         var stompClient = Stomp.over(socket);
         stompClient.debug = null;
 

@@ -109,7 +109,7 @@
         
         //const socket = new SockJS('/signaling/video');
         //const socket = new SockJS('https://192.168.219.105:443/signaling/video');
-        const socket = new SockJS('https://gogolckh.ddns.net:443/signaling/video');//aws 테스트
+        const socket = new SockJS('https://gogolckh.ddns.net/signaling/video');//aws 테스트
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
 
