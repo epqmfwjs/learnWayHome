@@ -79,7 +79,6 @@
 </div>
 <script>
     let localStreamElement = document.querySelector('#localStream');
-    //const myKey = Math.random().toString(36).substring(2, 11);
     const myKey = document.getElementById("connectId").value;
     console.log(myKey);
     let pcListMap = new Map();
@@ -106,9 +105,6 @@
     };
 
     const connectSocket = async () => {
-        
-        //const socket = new SockJS('/signaling/video');
-        //const socket = new SockJS('https://192.168.219.105:443/signaling/video');
         const socket = new SockJS('https://gogolckh.ddns.net/signaling/video');
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
@@ -202,7 +198,7 @@
         document.querySelector('#startStreamBtn').disabled = false;
         otherKeyList = [];
         console.log('상담 종료');
-        
+
         // 윈도우 닫기
         window.close();
     };
@@ -218,8 +214,16 @@
         }, 5000);
     };
 
-    const createPeerConnection = (otherKey) => {
-        const pc = new RTCPeerConnection();
+       const createPeerConnection = (otherKey) => {
+        const pc = new RTCPeerConnection({
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' }, // Google STUN 서버
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'turn:user1:password1@gogolckh.ddns.net:3478' } // TURN 서버 주소
+            ]
+        });
+
         try {
             pc.addEventListener('icecandidate', event => {
                 onIceCandidate(event, otherKey);
@@ -282,7 +286,7 @@
             video.autoplay = true;
             video.controls = true;
             video.id = otherKey;
-            video.srcObject = event.streams[0];
+            video.srcObject = event.streams[0]; // 스트림을 비디오에 연결
             document.getElementById('remoteStreamDiv').appendChild(video);
         }
     };
@@ -322,5 +326,6 @@
         toggleMicBtn.textContent = audioEnabled ? '마이크On' : '마이크Off';
     });
 </script>
+
 </body>
 </html>
