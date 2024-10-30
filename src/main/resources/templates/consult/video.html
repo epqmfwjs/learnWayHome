@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>LearnWay</title>
@@ -109,7 +109,7 @@
         
         //const socket = new SockJS('/signaling/video');
         //const socket = new SockJS('https://192.168.219.105:443/signaling/video');
-        const socket = new SockJS('https://gogolckh.ddns.net/signaling/video');//aws 테스트
+        const socket = new SockJS('https://gogolckh.ddns.net/signaling/video');
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
 
