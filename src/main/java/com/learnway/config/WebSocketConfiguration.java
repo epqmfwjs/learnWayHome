@@ -47,7 +47,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     // (필요한 경우 TomcatRequestUpgradeStrategy를 커스터마이징할 때 사용)
     public static class TomcatRequestUpgradeStrategy extends org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy {
         public TomcatRequestUpgradeStrategy() {
-            // 필요한 경우 초기화 코드 추가
+
         }
     }
 }
